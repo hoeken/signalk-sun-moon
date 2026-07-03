@@ -23,22 +23,28 @@
   --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    --bg: #eef2f8;
-    --bg-elev: #ffffff;
-    --card: #ffffff;
-    --card-2: #f3f6fc;
-    --text: #121826;
-    --text-dim: #566079;
-    --border: #d5dcea;
-    --accent: #e8a600;
-    --accent-moon: #4a5573;
-    --danger-bg: #fde8ea;
-    --danger-border: #e2a3ad;
-    --danger-text: #7a1d2b;
-    --shadow: 0 6px 20px rgba(20, 30, 60, 0.12);
-  }
+/*
+ * Light palette. The inline script in index.html decides the theme before
+ * first paint and applies it as a class on <html>: `html.light` from a B&G
+ * `?mode=day` param or the OS `prefers-color-scheme` preference, `html.dark`
+ * (the :root default above) from `?mode=night` or a dark OS preference. The
+ * script always sets one of the two, so this is a plain class override rather
+ * than a media query — B&G's explicit mode wins over the OS preference.
+ */
+html.light {
+  --bg: #eef2f8;
+  --bg-elev: #ffffff;
+  --card: #ffffff;
+  --card-2: #f3f6fc;
+  --text: #121826;
+  --text-dim: #566079;
+  --border: #d5dcea;
+  --accent: #e8a600;
+  --accent-moon: #4a5573;
+  --danger-bg: #fde8ea;
+  --danger-border: #e2a3ad;
+  --danger-text: #7a1d2b;
+  --shadow: 0 6px 20px rgba(20, 30, 60, 0.12);
 }
 
 * {

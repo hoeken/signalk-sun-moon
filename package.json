@@ -17,6 +17,10 @@
   "signalk": {
     "displayName": "Sun & Moon",
     "appIcon": "icons/icon-512x512.png",
+    "screenshots": [
+      "./docs/screenshots/day-mode.png",
+      "./docs/screenshots/night-mode.png"
+    ],
     "recommends": [
       "signalk-derived-data",
       "signalk-navico-embedder"
@@ -27,6 +31,7 @@
   "files": [
     "index.js",
     "server/",
+    "docs/screenshots",
     "openApi.json",
     "public/",
     "SPEC.md"
