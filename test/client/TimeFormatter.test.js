@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { TimeFormatter } from "../../src/util/TimeFormatter.js";
 
 describe("TimeFormatter.duration (static)", () => {
@@ -56,5 +56,53 @@ describe("TimeFormatter — instance (pinned to UTC for determinism)", () => {
 
   it("reports the effective time-zone name", () => {
     expect(f.timeZoneName()).toBe("UTC");
+  });
+});
+
+describe("TimeFormatter — browser-local honors the runtime UTC offset (Navico MFDs)", () => {
+  // Navico displays can't set a named zone (Intl stays on UTC) but do report a UTC
+  // offset via getTimezoneOffset(). Simulate UTC+2 with the named zone unavailable.
+  afterEach(() => vi.restoreAllMocks());
+
+  it("shifts UTC instants by getTimezoneOffset() when no IANA zone is set", () => {
+    vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(-120); // UTC+2
+    const f = new TimeFormatter("en-GB");
+    expect(f.time("2026-07-03T13:30:00Z")).toMatch(/15.30/);
+  });
+
+  it("rolls the date across midnight using the offset", () => {
+    vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(-120); // UTC+2
+    const f = new TimeFormatter("en-GB");
+    const s = f.date("2026-07-03T23:30:00Z"); // +2h → 01:30 on Jul 4
+    expect(s).toMatch(/Jul/);
+    expect(s).toMatch(/\b4\b/);
+  });
+
+  it("handles zones behind UTC", () => {
+    vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(300); // UTC-5
+    const f = new TimeFormatter("en-GB");
+    expect(f.time("2026-07-03T13:30:00Z")).toMatch(/08.30/);
+  });
+
+  it("reports the offset as a UTC±HH:MM label", () => {
+    vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(-120);
+    expect(new TimeFormatter().timeZoneName()).toBe("UTC+02:00");
+    vi.restoreAllMocks();
+    vi.spyOn(Date.prototype, "getTimezoneOffset").mockReturnValue(330); // UTC-5:30
+    expect(new TimeFormatter().timeZoneName()).toBe("UTC-05:30");
+  });
+});
+
+describe("TimeFormatter.offsetLabel (static)", () => {
+  it("formats offsets with inverted sign and zero-padding", () => {
+    expect(TimeFormatter.offsetLabel(0)).toBe("UTC+00:00");
+    expect(TimeFormatter.offsetLabel(-60)).toBe("UTC+01:00");
+    expect(TimeFormatter.offsetLabel(-330)).toBe("UTC+05:30");
+    expect(TimeFormatter.offsetLabel(300)).toBe("UTC-05:00");
+  });
+
+  it("returns empty for non-finite input", () => {
+    expect(TimeFormatter.offsetLabel(NaN)).toBe("");
+    expect(TimeFormatter.offsetLabel("x")).toBe("");
   });
 });

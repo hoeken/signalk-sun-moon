@@ -222,6 +222,13 @@ computed at a single instant, reported as top-level `evaluatedAt`:
 The API echoes `requestedDate`, the UTC `dayWindowUtc`, and `evaluatedAt` so the client can
 label everything unambiguously.
 
+For the browser-local case the client does **not** rely on `Intl`'s named-zone resolution:
+Navico MFDs can't set a named (IANA) zone — it stays at `UTC` — but do expose a plain
+**UTC offset** via `Date#getTimezoneOffset()`. `TimeFormatter` shifts each instant by that
+offset and formats pinned to UTC, so the configured offset is honored. On a normal browser
+this is identical to formatting with the named zone (the offset is DST-aware and
+instant-specific). An explicit IANA zone, when supplied, is handed to `Intl` directly.
+
 ### 4.5 Response body (200)
 ```jsonc
 {
