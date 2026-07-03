@@ -186,7 +186,12 @@
             "properties": {
               "fraction": { "type": "number", "description": "Illuminated fraction 0..1." },
               "phase": { "type": "number", "description": "Cyclical phase 0..1 (0=new, 0.5=full)." },
-              "phaseName": { "type": "string" },
+              "phaseName": { "type": "string", "description": "Instantaneous phase name at evaluatedAt (§4.7)." },
+              "cardinalToday": {
+                "type": "string",
+                "nullable": true,
+                "description": "Name of the cardinal phase (New Moon / First Quarter / Full Moon / Last Quarter) whose instant falls within this calendar day, else null. Lets clients show the cardinal graphic on the day the event occurs."
+              },
               "angleDeg": { "type": "number", "description": "Bright-limb position angle in degrees." },
               "waxing": { "type": "boolean" }
             }

@@ -35,6 +35,14 @@ AstroService.prototype.compute = function (input) {
   var moonPos = SunCalc.getMoonPosition(evalAt, lat, lon);
   var illum = SunCalc.getMoonIllumination(evalAt);
 
+  // Which cardinal phase (if any) actually occurs *during this calendar day*,
+  // regardless of where the noon sample falls (§4.7). Lets the UI show the
+  // new/full/quarter graphic on the day the event happens.
+  var cardinalToday = cardinalOnDay(
+    SunCalc.getMoonIllumination(win.start).phase,
+    SunCalc.getMoonIllumination(win.end).phase
+  );
+
   // Zenith angle of the bright limb (anticlockwise), per the suncalc docs:
   //   zenithAngle = illumination.angle - moonPosition.parallacticAngle  (§8)
   var zenithAngleDeg = illum.angle - moonPos.parallacticAngle;
@@ -92,6 +100,7 @@ AstroService.prototype.compute = function (input) {
         fraction: round(illum.fraction, 4),
         phase: round(illum.phase, 4),
         phaseName: phaseName(illum.phase),
+        cardinalToday: cardinalToday,
         angleDeg: round(illum.angle, 2),
         waxing: illum.waxing === true,
       },
@@ -107,6 +116,36 @@ AstroService.prototype.compute = function (input) {
 // Exposed for unit testing / reuse.
 AstroService.resolveSunState = resolveSunState;
 AstroService.phaseName = phaseName;
+AstroService.cardinalOnDay = cardinalOnDay;
+
+// The four cardinal phases and the exact illumination.phase at which each occurs.
+var CARDINALS = [
+  { phase: 0.0, name: 'New Moon' },
+  { phase: 0.25, name: 'First Quarter' },
+  { phase: 0.5, name: 'Full Moon' },
+  { phase: 0.75, name: 'Last Quarter' },
+];
+
+/**
+ * Name the cardinal phase whose instant falls within the local day, given the
+ * moon phase at the day's start and end; else null (§4.7). The moon advances
+ * ~1/29.5 of a cycle per day — far less than the 0.25 between cardinals — so at
+ * most one cardinal can occur in a day. A cardinal at `c` is inside the day when
+ * the forward distance from `phaseStart` to `c` is within the day's total
+ * forward advance (both taken mod 1 to handle the wrap through new moon).
+ */
+function cardinalOnDay(phaseStart, phaseEnd) {
+  if (typeof phaseStart !== 'number' || typeof phaseEnd !== 'number') return null;
+  var advance = mod1(phaseEnd - phaseStart);
+  for (var i = 0; i < CARDINALS.length; i++) {
+    if (mod1(CARDINALS[i].phase - phaseStart) <= advance) return CARDINALS[i].name;
+  }
+  return null;
+}
+
+function mod1(x) {
+  return ((x % 1) + 1) % 1;
+}
 
 /**
  * Derive `sun.state` from `evaluatedAt` relative to the day's getTimes() events

@@ -24,7 +24,9 @@ export function MoonCard(props) {
   const illum = moon && moon.illumination;
   const pct = illum && typeof illum.fraction === 'number'
     ? Math.round(illum.fraction * 100) + '%' : '—';
-  const title = illum ? illum.phaseName : 'Moon';
+  // On a day a cardinal event occurs, show that name so the title matches the
+  // snapped graphic (§4.7); otherwise the instantaneous phase name.
+  const title = illum ? (illum.cardinalToday || illum.phaseName) : 'Moon';
   const phase = illum ? (illum.waxing ? 'Waxing' : 'Waning') : '—';
 
   return (

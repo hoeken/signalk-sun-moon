@@ -35,6 +35,17 @@ const SUN_FILE = {
 // src/assets/moon/moon-00.webp … moon-27.webp (see scripts/gen-assets.cjs).
 const MOON_FRAMES = 28;
 
+// The exact frame for each cardinal phase. When the API reports a cardinal event
+// occurs on the displayed day (`illumination.cardinalToday`), we snap to it so
+// the new/full/quarter graphic always appears on the day it happens — the noon
+// phase sample can otherwise land just outside that frame's window and skip it.
+const CARDINAL_FRAME = {
+  'New Moon': 0,
+  'First Quarter': 7,
+  'Full Moon': 14,
+  'Last Quarter': 21,
+};
+
 export class StaticImageProvider extends ImageProvider {
   /** @param {string} [base] URL prefix; defaults to the Vite base (works under /signalk-sun-moon/). */
   constructor(base) {
@@ -58,23 +69,23 @@ export class StaticImageProvider extends ImageProvider {
   getMoonImage(moonData) {
     if (!moonData || !moonData.illumination) return null;
     const illum = moonData.illumination;
-    const frame = moonFrame(illum.phase);
+    const frame = pickFrame(illum);
     const pct = typeof illum.fraction === 'number'
       ? ', ' + Math.round(illum.fraction * 100) + '% illuminated' : '';
-    const alt = 'Moon: ' + (illum.phaseName || 'phase') + pct;
+    const alt = 'Moon: ' + (illum.cardinalToday || illum.phaseName || 'phase') + pct;
     return this.img(this.moonSrc(frame), alt);
   }
 
   /**
    * Warm the cache for the previous/next day's moon frame so paging is smooth.
    * A one-day step advances the phase by ~1/29.5 of the cycle while frames are
-   * spaced 1/28 apart, so the neighbouring day's frame is always the current
-   * one ±1 (mod 28); preloading both covers prev and next. (The current frame
-   * is already displayed, so it isn't preloaded again.)
+   * spaced 1/28 apart, so the neighbouring day's frame is nearly always the
+   * current one ±1 (mod 28); preloading both covers prev and next. (The current
+   * frame is already displayed, so it isn't preloaded again.)
    */
   preloadMoon(moonData) {
     if (!moonData || !moonData.illumination) return;
-    const frame = moonFrame(moonData.illumination.phase);
+    const frame = pickFrame(moonData.illumination);
     this.preload(this.moonSrc((frame + 1) % MOON_FRAMES));
     this.preload(this.moonSrc((frame + MOON_FRAMES - 1) % MOON_FRAMES));
   }
@@ -98,6 +109,15 @@ export class StaticImageProvider extends ImageProvider {
     el.setAttribute('decoding', 'async');
     return el;
   }
+}
+
+/**
+ * Choose the frame for a moon illumination: snap to the cardinal frame when a
+ * cardinal event occurs on the displayed day, otherwise pick by phase.
+ */
+function pickFrame(illum) {
+  const cardinal = CARDINAL_FRAME[illum.cardinalToday];
+  return cardinal !== undefined ? cardinal : moonFrame(illum.phase);
 }
 
 /**

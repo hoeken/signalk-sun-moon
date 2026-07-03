@@ -276,7 +276,8 @@ label everything unambiguously.
     "illumination": {                   // getMoonIllumination()
       "fraction": 0.63,                // 0=new .. 1=full
       "phase": 0.42,                   // 0..1 cyclical (0=new,0.25=first qtr,0.5=full,0.75=last qtr)
-      "phaseName": "Waxing Gibbous",   // §4.7
+      "phaseName": "Waxing Gibbous",   // §4.7 — instantaneous name at evaluatedAt
+      "cardinalToday": null,           // §4.7 — cardinal phase occurring this day, else null
       "angleDeg": 12.5,                // bright-limb position angle, degrees (v2)
       "waxing": true                   // v2 flag
     },
@@ -330,6 +331,15 @@ the cardinal phases get named exactly:
 | `0.5+ε ≤ phase < 0.75-ε` | Waning Gibbous |
 | `0.75±ε` | Last Quarter |
 | `0.75+ε ≤ phase < 1-ε` | Waning Crescent |
+
+**`cardinalToday`** names the cardinal phase (New Moon / First Quarter / Full Moon / Last Quarter)
+whose *instant* falls within the local day `dayWindowUtc`, else `null`. It is derived from the
+phase at the day's `start`/`end` (a cardinal `c` is inside the day when the forward advance from
+`phaseStart` to `c` is within the day's total advance, mod 1). Because the moon advances ~1/29.5
+of a cycle per day, at most one cardinal can occur in a day. Unlike `phaseName` (the instantaneous
+name at `evaluatedAt`, which may read e.g. "Waning Crescent" at noon on the day of a late-night new
+moon), `cardinalToday` lets the UI show the new/full/quarter graphic on the calendar day the event
+actually happens.
 
 ### 4.8 Errors
 | HTTP | body `error` | when |
@@ -493,6 +503,11 @@ synodic month. 28 divides by 4 so the cardinal phases land on exact frames: `00`
 `07` First Quarter, `14` Full, `21` Last Quarter. It keys on the monotonic `phase` (not the
 coarse `phaseName`, nor the waxing/waning-ambiguous `fraction`). All 28 source frames live in
 `art/moon/moon-NN.png` and are resized to WebP by `gen-assets`.
+
+When `illumination.cardinalToday` is set (§4.7), the provider snaps to that cardinal's frame
+instead — so the new/full/quarter graphic shows on the day the event occurs rather than being
+aliased out when the once-a-day noon sample lands just outside the cardinal frame's window.
+`MoonCard` likewise titles the card `cardinalToday || phaseName` so the label matches the graphic.
 
 **Moon SVG (accurate, observer-oriented).** `MoonRenderer` draws an SVG disc whose lit
 portion matches the real phase **and** is rotated so it looks correct *from the
