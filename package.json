@@ -34,7 +34,8 @@
     "docs/screenshots",
     "openApi.json",
     "public/",
-    "SPEC.md"
+    "SPEC.md",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "release": "git tag -d v$npm_package_version; git tag v$npm_package_version && git push && git push origin v$npm_package_version",
