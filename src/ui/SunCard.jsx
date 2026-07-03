@@ -10,13 +10,13 @@ const STATE_LABEL = {
   nauticalDawn: "Nautical Dawn",
   dawn: "Dawn",
   sunrise: "Sunrise",
-  day: "Day",
+  day: "Daytime",
   polarDay: "Polar Day",
   sunset: "Sunset",
   dusk: "Dusk",
   nauticalDusk: "Nautical Dusk",
   astronomicalDusk: "Astronomical Dusk",
-  night: "Night",
+  night: "Nighttime",
 };
 
 /**
