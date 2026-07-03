@@ -33,15 +33,11 @@ Restart the Signal K server. Then:
 
 ## Configuration
 
-Plugin config (Admin UI → *Server → Plugin Config → Sun & Moon*):
-
-| Setting | Purpose |
-|---|---|
-| **Fallback latitude / longitude** | Used when there's no GPS fix and no `lat`/`lon` query param. |
-| **Graphic style** | `generated` (dynamic SVG, default) or `static` (premade assets). |
+The plugin has **no** configurable options.
 
 Position resolves in order: `lat`/`lon` query params → vessel `navigation.position` →
-config fallback → otherwise `400 no_position`.
+otherwise `400 no_position`. Graphic style is a client-side choice (`static` premade
+assets by default; override with `?imageStyle=generated`).
 
 ## API
 

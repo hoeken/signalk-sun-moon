@@ -11,9 +11,8 @@ var AstroService = require('./AstroService');
  * `/plugins/signalk-sun-moon`, so the effective URL is
  * `/plugins/signalk-sun-moon/api`.
  */
-function ApiRouter(app, getOptions) {
+function ApiRouter(app) {
   this.app = app;
-  this.getOptions = getOptions || function () { return {}; };
   this.resolver = new PositionResolver();
   this.astro = new AstroService();
 }
@@ -27,8 +26,7 @@ ApiRouter.prototype.register = function (router) {
 
 ApiRouter.prototype.handle = function (req, res) {
   try {
-    var options = this.getOptions() || {};
-    var pos = this.resolver.resolve(req.query, this.app, options);
+    var pos = this.resolver.resolve(req.query, this.app);
     var win = new DateWindow(req.query.date, pos.longitude, new Date());
     var body = this.astro.compute({
       lat: pos.latitude,

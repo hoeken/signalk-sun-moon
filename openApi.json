@@ -11,7 +11,7 @@
       "get": {
         "operationId": "getSunMoon",
         "summary": "Sun & moon data for a day and position",
-        "description": "Computes sun and moon information for the given calendar date and position. Position resolves in order: lat/lon query params, then the vessel navigation.position, then the plugin config default.",
+        "description": "Computes sun and moon information for the given calendar date and position. Position resolves in order: lat/lon query params, then the vessel navigation.position. If neither is available, returns 400 no_position.",
         "parameters": [
           {
             "name": "date",
@@ -96,7 +96,7 @@
           "longitude": { "type": "number" },
           "source": {
             "type": "string",
-            "enum": ["query", "vessel", "config"],
+            "enum": ["query", "vessel"],
             "description": "Which resolution step supplied the position."
           }
         }

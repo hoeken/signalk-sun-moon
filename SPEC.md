@@ -165,22 +165,15 @@ if (pos && pos.value && typeof pos.value.latitude === 'number') {
 ```
 
 ### 3.5 Plugin config schema
+The plugin exposes **no** configurable options; the schema is empty.
 ```jsonc
 {
   "type": "object",
-  "properties": {
-    "defaultLatitude":  { "type": "number", "title": "Fallback latitude",  "description": "Used when no GPS fix and no lat query param." },
-    "defaultLongitude": { "type": "number", "title": "Fallback longitude" },
-    "imageStyle": {
-      "type": "string",
-      "title": "Graphic style",
-      "enum": ["generated", "static"],
-      "default": "static",
-      "description": "Premade WebP art, or dynamically generated SVG."
-    }
-  }
+  "properties": {}
 }
 ```
+Position comes from lat/lon query params or the vessel's `navigation.position`
+(§4.3). Graphic style is a client-side choice (`src/config.js`), not plugin config.
 
 ---
 
@@ -203,11 +196,10 @@ GET /plugins/signalk-sun-moon/api
 ### 4.3 Position resolution order
 1. `lat` + `lon` query params, if present and valid.
 2. Server `navigation.position` (`app.getSelfPath`).
-3. Plugin config `defaultLatitude` / `defaultLongitude`.
-4. Otherwise → **400** `{ "error": "no_position", "message": "..." }`.
+3. Otherwise → **400** `{ "error": "no_position", "message": "..." }`.
 
 The response reports which source was used via `position.source`
-(`"query" | "vessel" | "config"`).
+(`"query" | "vessel"`).
 
 ### 4.4 Date & time-zone handling
 
@@ -344,7 +336,7 @@ the cardinal phases get named exactly:
 |---|---|---|
 | 400 | `bad_date` | `date` not `YYYY-MM-DD` / not a real date. |
 | 400 | `bad_position` | lat/lon out of range, or only one of the pair given. |
-| 400 | `no_position` | no query, no vessel fix, no config default. |
+| 400 | `no_position` | no query lat/lon and no vessel fix. |
 | 500 | `internal` | unexpected failure. |
 
 All error bodies: `{ "error": "<code>", "message": "<human readable>" }`.
@@ -486,8 +478,8 @@ re-draw. Show a lightweight loading state and a clear error banner on failure.
 
 **Image-provider abstraction (required by the brief).** All graphics go through
 `ImageProvider` so we can swap "premade PNG/SVG" ↔ "dynamically generated" without
-touching the cards. The active provider is chosen by plugin config `imageStyle`
-(default `static`), overridable by the app.
+touching the cards. The active provider is a client-side choice (`IMAGE_STYLE_DEFAULT`
+in `src/config.js`, default `static`), overridable by the app (e.g. `?imageStyle=`).
 
 **Sun graphic.** One visual per (possibly collapsed) sun state. Minimum visual set:
 `night`, `dawn`/`dusk` (twilight), `sunrise`/`sunset` (horizon), `day`. The fine-grained

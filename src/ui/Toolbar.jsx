@@ -33,7 +33,6 @@ export function Toolbar(props) {
 
       <div className="toolbar__meta">
         <span className="toolbar__pos">{formatPosition(position)}</span>
-        {timeZone ? <span className="toolbar__tz">{timeZone}</span> : null}
       </div>
     </div>
   );
@@ -45,8 +44,7 @@ function formatPosition(position) {
   if (!position) return 'Locating…';
   const lat = fmtCoord(position.latitude, 'N', 'S');
   const lon = fmtCoord(position.longitude, 'E', 'W');
-  const src = SOURCE_LABEL[position.source] || position.source || '';
-  return lat + ' ' + lon + (src ? ' · ' + src : '');
+  return lat + ' ' + lon;
 }
 
 function fmtCoord(v, pos, neg) {

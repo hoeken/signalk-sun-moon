@@ -13,49 +13,29 @@ var openApi = require('./openApi.json');
  * data on demand inside the API handler. No timers, no deltas emitted.
  */
 module.exports = function (app) {
-  var options = {};
-
   var plugin = {
     id: 'signalk-sun-moon',
     name: 'Sun & Moon',
     description: 'Clean sun & moon information (rise/set, phase, observer-oriented moon) for the vessel position and a chosen day.',
 
+    // No configurable options: position comes from lat/lon query params or the
+    // vessel's navigation.position (§4.3), and the graphic style is a client-side
+    // choice (see src/config.js).
     schema: {
       type: 'object',
-      properties: {
-        defaultLatitude: {
-          type: 'number',
-          title: 'Fallback latitude',
-          description: 'Used when there is no GPS fix and no lat query param.',
-        },
-        defaultLongitude: {
-          type: 'number',
-          title: 'Fallback longitude',
-          description: 'Used when there is no GPS fix and no lon query param.',
-        },
-        imageStyle: {
-          type: 'string',
-          title: 'Graphic style',
-          enum: ['generated', 'static'],
-          default: 'static',
-          description: 'Premade WebP art, or dynamically generated SVG.',
-        },
-      },
+      properties: {},
     },
 
-    start: function (opts) {
-      options = opts || {};
+    start: function () {
       if (typeof app.debug === 'function') {
         app.debug('signalk-sun-moon started');
       }
     },
 
-    stop: function () {
-      options = {};
-    },
+    stop: function () {},
 
     registerWithRouter: function (router) {
-      var api = new ApiRouter(app, function () { return options; });
+      var api = new ApiRouter(app);
       api.register(router);
     },
 

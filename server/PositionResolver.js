@@ -6,14 +6,12 @@ var errors = require('./errors');
  * Applies the §4.3 position-resolution order and reports which source won:
  *   1. `lat` + `lon` query params (must be supplied together and in range)
  *   2. the vessel's `navigation.position` from the server
- *   3. the plugin config `defaultLatitude` / `defaultLongitude`
- *   4. otherwise → 400 `no_position`
+ *   3. otherwise → 400 `no_position`
  */
 function PositionResolver() {}
 
-PositionResolver.prototype.resolve = function (query, app, options) {
+PositionResolver.prototype.resolve = function (query, app) {
   query = query || {};
-  options = options || {};
 
   var hasLat = query.lat !== undefined && query.lat !== '';
   var hasLon = query.lon !== undefined && query.lon !== '';
@@ -45,15 +43,9 @@ PositionResolver.prototype.resolve = function (query, app, options) {
     }
   }
 
-  // 3. Plugin config fallback.
-  if (typeof options.defaultLatitude === 'number' && isFinite(options.defaultLatitude) &&
-      typeof options.defaultLongitude === 'number' && isFinite(options.defaultLongitude)) {
-    return { latitude: options.defaultLatitude, longitude: options.defaultLongitude, source: 'config' };
-  }
-
-  // 4. Nothing worked.
+  // 3. Nothing worked.
   throw errors.badRequest('no_position',
-    'No position available: supply lat/lon query params, a vessel GPS fix, or a config default.');
+    'No position available: supply lat/lon query params or a vessel GPS fix.');
 };
 
 module.exports = PositionResolver;
