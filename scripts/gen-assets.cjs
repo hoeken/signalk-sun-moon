@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /*
  * Generates the premade sun/moon art used by StaticImageProvider by resizing the
@@ -28,13 +28,13 @@
  * Run with `node scripts/gen-assets.cjs` (also wired to `npm run assets`).
  */
 
-var fs = require('fs');
-var path = require('path');
-var sharp = require('sharp');
+var fs = require("fs");
+var path = require("path");
+var sharp = require("sharp");
 
-var ROOT = path.join(__dirname, '..');
-var SRC = path.join(ROOT, 'art');
-var OUT = path.join(ROOT, 'src', 'assets');
+var ROOT = path.join(__dirname, "..");
+var SRC = path.join(ROOT, "art");
+var OUT = path.join(ROOT, "src", "assets");
 
 // Dimensions (px) of the generated 4:3 art. The cards render the graphic at
 // roughly ~460 CSS px wide at the widest layout; 1024 stays crisp well past
@@ -48,14 +48,14 @@ var QUALITY = 80;
 
 // Sun source basename -> output slug. Identity: the source names already match
 // StaticImageProvider's SUN_FILE targets.
-var SUN = ['day', 'sunrise', 'sunset', 'dawn', 'dusk', 'night'];
+var SUN = ["day", "sunrise", "sunset", "dawn", "dusk", "night"];
 
 // Moon: 28-frame set. StaticImageProvider selects frame index round(phase*28)%28,
 // so 00 = New, 07 = First Quarter, 14 = Full, 21 = Last Quarter.
 var MOON_FRAMES = 28;
 
 function pad2(n) {
-  return n < 10 ? '0' + n : String(n);
+  return n < 10 ? "0" + n : String(n);
 }
 
 // Resize one 4:3 source into WIDTH x HEIGHT. Sources are already 4:3, so `cover`
@@ -66,43 +66,43 @@ async function resize(srcRel, outRel) {
   var outPath = path.join(OUT, outRel);
 
   if (!fs.existsSync(inPath)) {
-    throw new Error('missing source ' + path.relative(ROOT, inPath));
+    throw new Error("missing source " + path.relative(ROOT, inPath));
   }
 
   var meta = await sharp(inPath).metadata();
   if (meta.width < WIDTH || meta.height < HEIGHT) {
     console.warn(
-      'WARNING: ' + srcRel + ' is ' + meta.width + 'x' + meta.height +
-        '; smaller than the ' + WIDTH + 'x' + HEIGHT + ' target. Output will be ' +
-        'upscaled and may look soft — supply a larger source.',
+      "WARNING: " + srcRel + " is " + meta.width + "x" + meta.height +
+        "; smaller than the " + WIDTH + "x" + HEIGHT + " target. Output will be " +
+        "upscaled and may look soft — supply a larger source.",
     );
   }
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   await sharp(inPath)
-    .resize(WIDTH, HEIGHT, { fit: 'cover', position: 'center' })
+    .resize(WIDTH, HEIGHT, { fit: "cover", position: "center" })
     .webp({ quality: QUALITY })
     .toFile(outPath);
-  console.log('  wrote', path.relative(ROOT, outPath), '(' + WIDTH + 'x' + HEIGHT + ')');
+  console.log("  wrote", path.relative(ROOT, outPath), "(" + WIDTH + "x" + HEIGHT + ")");
 }
 
 async function main() {
   for (var i = 0; i < SUN.length; i++) {
     var name = SUN[i];
-    await resize(path.join('sun', name + '.png'), path.join('sun', name + '.webp'));
+    await resize(path.join("sun", name + ".png"), path.join("sun", name + ".webp"));
   }
   for (var j = 0; j < MOON_FRAMES; j++) {
-    var frame = 'moon-' + pad2(j);
-    await resize(path.join('moon', frame + '.png'), path.join('moon', frame + '.webp'));
+    var frame = "moon-" + pad2(j);
+    await resize(path.join("moon", frame + ".png"), path.join("moon", frame + ".webp"));
   }
-  console.log('done.');
+  console.log("done.");
 }
 
-console.log('Generating static art from ' + path.relative(ROOT, SRC) + '/');
+console.log("Generating static art from " + path.relative(ROOT, SRC) + "/");
 main().then(
   function () {},
   function (err) {
-    console.error('Asset generation failed: ' + err.message);
+    console.error("Asset generation failed: " + err.message);
     process.exit(1);
   },
 );

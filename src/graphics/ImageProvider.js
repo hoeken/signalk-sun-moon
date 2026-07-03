@@ -13,7 +13,7 @@ export class ImageProvider {
    */
   // eslint-disable-next-line no-unused-vars
   getSunImage(state) {
-    throw new Error('ImageProvider.getSunImage not implemented');
+    throw new Error("ImageProvider.getSunImage not implemented");
   }
 
   /**
@@ -22,7 +22,7 @@ export class ImageProvider {
    */
   // eslint-disable-next-line no-unused-vars
   getMoonImage(moonData) {
-    throw new Error('ImageProvider.getMoonImage not implemented');
+    throw new Error("ImageProvider.getMoonImage not implemented");
   }
 
   /**

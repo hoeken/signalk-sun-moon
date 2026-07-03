@@ -19,7 +19,8 @@ export class DateController {
   }
 
   set(str) {
-    if (DateController.isValid(str)) this.date = str;
+    if (DateController.isValid(str))
+      this.date = str;
     return this.date;
   }
 
@@ -53,23 +54,28 @@ export class DateController {
     const y = d.getFullYear();
     let mo = String(d.getMonth() + 1);
     let da = String(d.getDate());
-    if (mo.length < 2) mo = '0' + mo;
-    if (da.length < 2) da = '0' + da;
-    return y + '-' + mo + '-' + da;
+    if (mo.length < 2)
+      mo = "0" + mo;
+    if (da.length < 2)
+      da = "0" + da;
+    return y + "-" + mo + "-" + da;
   }
 
   /** Shift a YYYY-MM-DD string by whole days, staying in the calendar sense. */
   static shift(str, days) {
     const p = DateController.parts(str);
-    if (!p) return str;
+    if (!p)
+      return str;
     // Use UTC arithmetic to avoid DST hour drift, then read back UTC fields.
     const d = new Date(Date.UTC(p.y, p.mo - 1, p.d));
     d.setUTCDate(d.getUTCDate() + days);
     let mo = String(d.getUTCMonth() + 1);
     let da = String(d.getUTCDate());
-    if (mo.length < 2) mo = '0' + mo;
-    if (da.length < 2) da = '0' + da;
-    return d.getUTCFullYear() + '-' + mo + '-' + da;
+    if (mo.length < 2)
+      mo = "0" + mo;
+    if (da.length < 2)
+      da = "0" + da;
+    return d.getUTCFullYear() + "-" + mo + "-" + da;
   }
 
   static isValid(str) {
@@ -78,7 +84,8 @@ export class DateController {
 
   static parts(str) {
     const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(str));
-    if (!m) return null;
+    if (!m)
+      return null;
     const y = Number(m[1]);
     const mo = Number(m[2]);
     const d = Number(m[3]);

@@ -1,8 +1,8 @@
-'use strict';
+"use strict";
 
-var PositionResolver = require('./PositionResolver');
-var DateWindow = require('./DateWindow');
-var AstroService = require('./AstroService');
+var PositionResolver = require("./PositionResolver");
+var DateWindow = require("./DateWindow");
+var AstroService = require("./AstroService");
 
 /**
  * Express router for the single `GET /api` endpoint (§4). Parses/validates the
@@ -19,7 +19,7 @@ function ApiRouter(app) {
 
 ApiRouter.prototype.register = function (router) {
   var self = this;
-  router.get('/api', function (req, res) {
+  router.get("/api", function (req, res) {
     self.handle(req, res);
   });
 };
@@ -34,19 +34,19 @@ ApiRouter.prototype.handle = function (req, res) {
       source: pos.source,
       dateWindow: win,
     });
-    res.type('application/json');
+    res.type("application/json");
     res.status(200).json(body);
   } catch (err) {
     if (err && err.isApiError) {
       res.status(err.status).json({ error: err.code, message: err.message });
       return;
     }
-    if (this.app && typeof this.app.error === 'function') {
+    if (this.app && typeof this.app.error === "function") {
       this.app.error(err);
     }
     res.status(500).json({
-      error: 'internal',
-      message: 'Unexpected error computing sun/moon data.',
+      error: "internal",
+      message: "Unexpected error computing sun/moon data.",
     });
   }
 };

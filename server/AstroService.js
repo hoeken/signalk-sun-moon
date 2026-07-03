@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-var SunCalc = require('suncalc');
+var SunCalc = require("suncalc");
 
 // Cardinal-phase tolerance (~half a day) so the four cardinal phases get named
 // exactly (§4.7).
@@ -40,7 +40,7 @@ AstroService.prototype.compute = function (input) {
   // new/full/quarter graphic on the day the event happens.
   var cardinalToday = cardinalOnDay(
     SunCalc.getMoonIllumination(win.start).phase,
-    SunCalc.getMoonIllumination(win.end).phase
+    SunCalc.getMoonIllumination(win.end).phase,
   );
 
   // Zenith angle of the bright limb (anticlockwise), per the suncalc docs:
@@ -120,10 +120,10 @@ AstroService.cardinalOnDay = cardinalOnDay;
 
 // The four cardinal phases and the exact illumination.phase at which each occurs.
 var CARDINALS = [
-  { phase: 0.0, name: 'New Moon' },
-  { phase: 0.25, name: 'First Quarter' },
-  { phase: 0.5, name: 'Full Moon' },
-  { phase: 0.75, name: 'Last Quarter' },
+  { phase: 0.0, name: "New Moon" },
+  { phase: 0.25, name: "First Quarter" },
+  { phase: 0.5, name: "Full Moon" },
+  { phase: 0.75, name: "Last Quarter" },
 ];
 
 /**
@@ -135,10 +135,12 @@ var CARDINALS = [
  * forward advance (both taken mod 1 to handle the wrap through new moon).
  */
 function cardinalOnDay(phaseStart, phaseEnd) {
-  if (typeof phaseStart !== 'number' || typeof phaseEnd !== 'number') return null;
+  if (typeof phaseStart !== "number" || typeof phaseEnd !== "number")
+    return null;
   var advance = mod1(phaseEnd - phaseStart);
   for (var i = 0; i < CARDINALS.length; i++) {
-    if (mod1(CARDINALS[i].phase - phaseStart) <= advance) return CARDINALS[i].name;
+    if (mod1(CARDINALS[i].phase - phaseStart) <= advance)
+      return CARDINALS[i].name;
   }
   return null;
 }
@@ -152,8 +154,10 @@ function mod1(x) {
  * (§4.6). Falls back to altitude when the twilight events are null (polar-ish).
  */
 function resolveSunState(t, times, polar, altitudeDeg) {
-  if (polar.alwaysUp) return 'polarDay';
-  if (polar.alwaysDown) return 'polarNight';
+  if (polar.alwaysUp)
+    return "polarDay";
+  if (polar.alwaysDown)
+    return "polarNight";
 
   var nightEnd = ms(times.nightEnd);
   var nauticalDawn = ms(times.nauticalDawn);
@@ -166,25 +170,37 @@ function resolveSunState(t, times, polar, altitudeDeg) {
   var nauticalDusk = ms(times.nauticalDusk);
   var night = ms(times.night);
 
-  if (inRange(t, sunrise, sunriseEnd)) return 'sunrise';
-  if (inRange(t, sunriseEnd, sunsetStart)) return 'day';
-  if (inRange(t, sunsetStart, sunset)) return 'sunset';
-  if (inRange(t, dawn, sunrise)) return 'dawn';
-  if (inRange(t, sunset, dusk)) return 'dusk';
-  if (inRange(t, nauticalDawn, dawn)) return 'nauticalDawn';
-  if (inRange(t, dusk, nauticalDusk)) return 'nauticalDusk';
-  if (inRange(t, nightEnd, nauticalDawn)) return 'astronomicalDawn';
-  if (inRange(t, nauticalDusk, night)) return 'astronomicalDusk';
+  if (inRange(t, sunrise, sunriseEnd))
+    return "sunrise";
+  if (inRange(t, sunriseEnd, sunsetStart))
+    return "day";
+  if (inRange(t, sunsetStart, sunset))
+    return "sunset";
+  if (inRange(t, dawn, sunrise))
+    return "dawn";
+  if (inRange(t, sunset, dusk))
+    return "dusk";
+  if (inRange(t, nauticalDawn, dawn))
+    return "nauticalDawn";
+  if (inRange(t, dusk, nauticalDusk))
+    return "nauticalDusk";
+  if (inRange(t, nightEnd, nauticalDawn))
+    return "astronomicalDawn";
+  if (inRange(t, nauticalDusk, night))
+    return "astronomicalDusk";
 
   // No interval matched. If we have a clean day (sunrise & sunset known), t is
   // in deep night; otherwise fall back to the instantaneous altitude.
-  if (sunrise !== null && sunset !== null) return 'night';
-  return altitudeDeg >= 0 ? 'day' : 'night';
+  if (sunrise !== null && sunset !== null)
+    return "night";
+  return altitudeDeg >= 0 ? "day" : "night";
 }
 
 function computeDayLength(times, polar) {
-  if (polar.alwaysUp) return 86400;
-  if (polar.alwaysDown) return 0;
+  if (polar.alwaysUp)
+    return 86400;
+  if (polar.alwaysDown)
+    return 0;
   var sunrise = ms(times.sunrise);
   var sunset = ms(times.sunset);
   if (sunrise !== null && sunset !== null) {
@@ -196,20 +212,28 @@ function computeDayLength(times, polar) {
 /** Map illumination.phase (0..1 cyclical) to a human phase name (§4.7). */
 function phaseName(phase) {
   var e = PHASE_EPS;
-  if (phase < e || phase > 1 - e) return 'New Moon';
-  if (Math.abs(phase - 0.25) <= e) return 'First Quarter';
-  if (Math.abs(phase - 0.5) <= e) return 'Full Moon';
-  if (Math.abs(phase - 0.75) <= e) return 'Last Quarter';
-  if (phase < 0.25) return 'Waxing Crescent';
-  if (phase < 0.5) return 'Waxing Gibbous';
-  if (phase < 0.75) return 'Waning Gibbous';
-  return 'Waning Crescent';
+  if (phase < e || phase > 1 - e)
+    return "New Moon";
+  if (Math.abs(phase - 0.25) <= e)
+    return "First Quarter";
+  if (Math.abs(phase - 0.5) <= e)
+    return "Full Moon";
+  if (Math.abs(phase - 0.75) <= e)
+    return "Last Quarter";
+  if (phase < 0.25)
+    return "Waxing Crescent";
+  if (phase < 0.5)
+    return "Waxing Gibbous";
+  if (phase < 0.75)
+    return "Waning Gibbous";
+  return "Waning Crescent";
 }
 
 // ---- helpers --------------------------------------------------------------
 
 function ms(d) {
-  if (d === null || d === undefined) return null;
+  if (d === null || d === undefined)
+    return null;
   var t = d.getTime();
   return isNaN(t) ? null : t;
 }
@@ -219,14 +243,17 @@ function inRange(t, a, b) {
 }
 
 function toIso(d) {
-  if (d === null || d === undefined) return null;
+  if (d === null || d === undefined)
+    return null;
   var t = d.getTime();
-  if (isNaN(t)) return null;
+  if (isNaN(t))
+    return null;
   return d.toISOString();
 }
 
 function round(x, decimals) {
-  if (typeof x !== 'number' || !isFinite(x)) return null;
+  if (typeof x !== "number" || !isFinite(x))
+    return null;
   var f = Math.pow(10, decimals);
   return Math.round(x * f) / f;
 }

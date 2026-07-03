@@ -1,4 +1,4 @@
-import { ImageProvider } from './ImageProvider.js';
+import { ImageProvider } from "./ImageProvider.js";
 
 /**
  * Alternative provider (§6.5): returns premade assets keyed by (collapsed) sun
@@ -15,18 +15,18 @@ import { ImageProvider } from './ImageProvider.js';
  */
 
 const SUN_FILE = {
-  night: 'night',
-  polarNight: 'night',
-  astronomicalDawn: 'dawn',
-  nauticalDawn: 'dawn',
-  dawn: 'dawn',
-  sunrise: 'sunrise',
-  day: 'day',
-  polarDay: 'day',
-  sunset: 'sunset',
-  dusk: 'dusk',
-  nauticalDusk: 'dusk',
-  astronomicalDusk: 'dusk',
+  night: "night",
+  polarNight: "night",
+  astronomicalDawn: "dawn",
+  nauticalDawn: "dawn",
+  dawn: "dawn",
+  sunrise: "sunrise",
+  day: "day",
+  polarDay: "day",
+  sunset: "sunset",
+  dusk: "dusk",
+  nauticalDusk: "dusk",
+  astronomicalDusk: "dusk",
 };
 
 // Number of premade moon frames (§6.5). 28 ≈ one frame per day of the 29.53-day
@@ -40,10 +40,10 @@ const MOON_FRAMES = 28;
 // the new/full/quarter graphic always appears on the day it happens — the noon
 // phase sample can otherwise land just outside that frame's window and skip it.
 const CARDINAL_FRAME = {
-  'New Moon': 0,
-  'First Quarter': 7,
-  'Full Moon': 14,
-  'Last Quarter': 21,
+  "New Moon": 0,
+  "First Quarter": 7,
+  "Full Moon": 14,
+  "Last Quarter": 21,
 };
 
 export class StaticImageProvider extends ImageProvider {
@@ -52,9 +52,10 @@ export class StaticImageProvider extends ImageProvider {
     super();
     if (base === undefined) {
       // import.meta.env.BASE_URL is './' per vite.config; normalize to end with '/'.
-      base = (import.meta.env && import.meta.env.BASE_URL) || './';
+      base = (import.meta.env && import.meta.env.BASE_URL) || "./";
     }
-    if (base.charAt(base.length - 1) !== '/') base += '/';
+    if (base.charAt(base.length - 1) !== "/")
+      base += "/";
     this.base = base;
     // src -> Image, so each frame is preloaded at most once and the request
     // isn't GC'd before it lands in the browser cache (bounded: ≤ 28 frames).
@@ -62,17 +63,18 @@ export class StaticImageProvider extends ImageProvider {
   }
 
   getSunImage(state) {
-    const file = SUN_FILE[state] || 'day';
-    return this.img(this.base + 'sun/' + file + '.webp', 'Sun graphic: ' + state);
+    const file = SUN_FILE[state] || "day";
+    return this.img(this.base + "sun/" + file + ".webp", "Sun graphic: " + state);
   }
 
   getMoonImage(moonData) {
-    if (!moonData || !moonData.illumination) return null;
+    if (!moonData || !moonData.illumination)
+      return null;
     const illum = moonData.illumination;
     const frame = pickFrame(illum);
-    const pct = typeof illum.fraction === 'number'
-      ? ', ' + Math.round(illum.fraction * 100) + '% illuminated' : '';
-    const alt = 'Moon: ' + (illum.cardinalToday || illum.phaseName || 'phase') + pct;
+    const pct = typeof illum.fraction === "number"
+      ? ", " + Math.round(illum.fraction * 100) + "% illuminated" : "";
+    const alt = "Moon: " + (illum.cardinalToday || illum.phaseName || "phase") + pct;
     return this.img(this.moonSrc(frame), alt);
   }
 
@@ -84,29 +86,31 @@ export class StaticImageProvider extends ImageProvider {
    * frame is already displayed, so it isn't preloaded again.)
    */
   preloadMoon(moonData) {
-    if (!moonData || !moonData.illumination) return;
+    if (!moonData || !moonData.illumination)
+      return;
     const frame = pickFrame(moonData.illumination);
     this.preload(this.moonSrc((frame + 1) % MOON_FRAMES));
     this.preload(this.moonSrc((frame + MOON_FRAMES - 1) % MOON_FRAMES));
   }
 
   moonSrc(frame) {
-    return this.base + 'moon/moon-' + pad2(frame) + '.webp';
+    return this.base + "moon/moon-" + pad2(frame) + ".webp";
   }
 
   preload(src) {
-    if (this._preloaded.has(src)) return;
+    if (this._preloaded.has(src))
+      return;
     const img = new Image();
-    img.decoding = 'async';
+    img.decoding = "async";
     img.src = src;
     this._preloaded.set(src, img);
   }
 
   img(src, alt) {
-    const el = document.createElement('img');
-    el.setAttribute('src', src);
-    el.setAttribute('alt', alt);
-    el.setAttribute('decoding', 'async');
+    const el = document.createElement("img");
+    el.setAttribute("src", src);
+    el.setAttribute("alt", alt);
+    el.setAttribute("decoding", "async");
     return el;
   }
 }
@@ -127,11 +131,12 @@ function pickFrame(illum) {
  * wraps at 1.0 back to the new moon, so the result is taken mod MOON_FRAMES.
  */
 function moonFrame(phase) {
-  if (typeof phase !== 'number' || !isFinite(phase)) return 0;
+  if (typeof phase !== "number" || !isFinite(phase))
+    return 0;
   const wrapped = ((phase % 1) + 1) % 1; // normalize into [0, 1)
   return Math.round(wrapped * MOON_FRAMES) % MOON_FRAMES;
 }
 
 function pad2(n) {
-  return n < 10 ? '0' + n : String(n);
+  return n < 10 ? "0" + n : String(n);
 }

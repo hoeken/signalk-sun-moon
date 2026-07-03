@@ -1,4 +1,4 @@
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from "vitest/config";
 
 // Dedicated Vitest config (kept separate from vite.config.js, whose `root: 'src'`
 // and build settings are for the webapp bundle, not the tests).
@@ -8,8 +8,8 @@ import { defineConfig } from 'vitest/config';
 // opt into jsdom per-file with a `// @vitest-environment jsdom` docblock.
 export default defineConfig({
   test: {
-    environment: 'node',
-    include: ['test/**/*.test.js'],
+    environment: "node",
+    include: ["test/**/*.test.js"],
     globals: false,
   },
 });

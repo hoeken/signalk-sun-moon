@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 /** A single label/value row in a card's stat list. `title` becomes a tooltip. */
 export function Stat(props) {

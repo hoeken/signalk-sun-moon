@@ -1,25 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ApiClient } from '../api/ApiClient.js';
-import { DateController } from '../util/DateController.js';
-import { TimeFormatter } from '../util/TimeFormatter.js';
-import { GeneratedImageProvider } from '../graphics/GeneratedImageProvider.js';
-import { StaticImageProvider } from '../graphics/StaticImageProvider.js';
-import { IMAGE_STYLE_DEFAULT } from '../config.js';
-import { Toolbar } from './Toolbar.jsx';
-import { SunCard } from './SunCard.jsx';
-import { MoonCard } from './MoonCard.jsx';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ApiClient } from "../api/ApiClient.js";
+import { DateController } from "../util/DateController.js";
+import { TimeFormatter } from "../util/TimeFormatter.js";
+import { GeneratedImageProvider } from "../graphics/GeneratedImageProvider.js";
+import { StaticImageProvider } from "../graphics/StaticImageProvider.js";
+import { IMAGE_STYLE_DEFAULT } from "../config.js";
+import { Toolbar } from "./Toolbar.jsx";
+import { SunCard } from "./SunCard.jsx";
+import { MoonCard } from "./MoonCard.jsx";
 
 /** Pick the graphics provider by style name (§6.5). */
 function makeProvider(style) {
-  return style === 'static' ? new StaticImageProvider() : new GeneratedImageProvider();
+  return style === "static" ? new StaticImageProvider() : new GeneratedImageProvider();
 }
 
 /** Allow overriding the graphic style via ?imageStyle=static for demos/testing. */
 function resolveImageStyle() {
   try {
-    const q = new URLSearchParams(window.location.search).get('imageStyle');
-    if (q === 'static' || q === 'generated') return q;
-  } catch (e) { /* ignore */ }
+    const q = new URLSearchParams(window.location.search).get("imageStyle");
+    if (q === "static" || q === "generated")
+      return q;
+  } catch { /* ignore */ }
   return IMAGE_STYLE_DEFAULT;
 }
 
@@ -30,9 +31,11 @@ function resolveImageStyle() {
  */
 export function App() {
   const controllerRef = useRef(null);
-  if (!controllerRef.current) controllerRef.current = new DateController();
+  if (!controllerRef.current)
+    controllerRef.current = new DateController();
   const apiRef = useRef(null);
-  if (!apiRef.current) apiRef.current = new ApiClient();
+  if (!apiRef.current)
+    apiRef.current = new ApiClient();
 
   const [date, setDate] = useState(controllerRef.current.value);
   const [data, setData] = useState(null);
@@ -48,11 +51,13 @@ export function App() {
     setLoading(true);
     setError(null);
     apiRef.current.fetch({ date: d }).then((body) => {
-      if (id !== reqId.current) return; // a newer request superseded this one
+      if (id !== reqId.current)
+        return; // a newer request superseded this one
       setData(body);
       setLoading(false);
     }).catch((err) => {
-      if (id !== reqId.current) return;
+      if (id !== reqId.current)
+        return;
       setError(err);
       setLoading(false);
     });
@@ -92,7 +97,7 @@ export function App() {
         position={data && data.position}
         timeZone={formatter.timeZoneName()}
       />
-      
+
       <footer className="app__footer">
         <span>
           Times shown in your local time zone. Astronomy by <a href="https://www.npmjs.com/package/suncalc">suncalc</a>.

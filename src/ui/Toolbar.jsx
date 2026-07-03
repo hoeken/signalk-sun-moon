@@ -1,11 +1,11 @@
-import React from 'react';
+import React from "react";
 
 /**
  * Top toolbar (§6.2): ‹ Prev · <input type="date"> · Next › · Today, plus the
  * resolved position + its source and the active time zone.
  */
 export function Toolbar(props) {
-  const { date, isToday, onPrev, onNext, onToday, onSet, loading, position, timeZone } = props;
+  const { date, isToday, onPrev, onNext, onToday, onSet, loading, position } = props;
 
   return (
     <div className="toolbar">
@@ -38,17 +38,17 @@ export function Toolbar(props) {
   );
 }
 
-const SOURCE_LABEL = { query: 'manual', vessel: 'vessel GPS', config: 'config default' };
-
 function formatPosition(position) {
-  if (!position) return 'Locating…';
-  const lat = fmtCoord(position.latitude, 'N', 'S');
-  const lon = fmtCoord(position.longitude, 'E', 'W');
-  return lat + ' ' + lon;
+  if (!position)
+    return "Locating…";
+  const lat = fmtCoord(position.latitude, "N", "S");
+  const lon = fmtCoord(position.longitude, "E", "W");
+  return lat + " " + lon;
 }
 
 function fmtCoord(v, pos, neg) {
-  if (typeof v !== 'number' || !isFinite(v)) return '—';
+  if (typeof v !== "number" || !isFinite(v))
+    return "—";
   const hemi = v >= 0 ? pos : neg;
-  return Math.abs(v).toFixed(3) + '° ' + hemi;
+  return Math.abs(v).toFixed(3) + "° " + hemi;
 }

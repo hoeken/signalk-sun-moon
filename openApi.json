@@ -18,21 +18,35 @@
             "in": "query",
             "required": false,
             "description": "Calendar day to compute for (YYYY-MM-DD). Defaults to today at the resolved longitude.",
-            "schema": { "type": "string", "format": "date", "example": "2026-07-03" }
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-07-03"
+            }
           },
           {
             "name": "lat",
             "in": "query",
             "required": false,
             "description": "Observer latitude in decimal degrees. Must be supplied together with lon.",
-            "schema": { "type": "number", "minimum": -90, "maximum": 90, "example": 37.81 }
+            "schema": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "example": 37.81
+            }
           },
           {
             "name": "lon",
             "in": "query",
             "required": false,
             "description": "Observer longitude in decimal degrees. Must be supplied together with lat.",
-            "schema": { "type": "number", "minimum": -180, "maximum": 180, "example": -122.42 }
+            "schema": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "example": -122.42
+            }
           }
         ],
         "responses": {
@@ -71,7 +85,10 @@
             "description": "Machine-readable error code.",
             "enum": ["bad_date", "bad_position", "no_position", "internal"]
           },
-          "message": { "type": "string", "description": "Human-readable explanation." }
+          "message": {
+            "type": "string",
+            "description": "Human-readable explanation."
+          }
         }
       },
       "IsoOrNull": {
@@ -139,16 +156,32 @@
             "type": "object",
             "required": ["altitudeDeg", "azimuthDeg"],
             "properties": {
-              "altitudeDeg": { "type": "number", "description": "Apparent altitude in degrees." },
-              "azimuthDeg": { "type": "number", "description": "North-based azimuth in degrees (0=N, 90=E)." }
+              "altitudeDeg": {
+                "type": "number",
+                "description": "Apparent altitude in degrees."
+              },
+              "azimuthDeg": {
+                "type": "number",
+                "description": "North-based azimuth in degrees (0=N, 90=E)."
+              }
             }
           },
           "state": {
             "type": "string",
             "description": "Sun state at evaluatedAt (§4.6).",
             "enum": [
-              "night", "astronomicalDawn", "nauticalDawn", "dawn", "sunrise", "day",
-              "sunset", "dusk", "nauticalDusk", "astronomicalDusk", "polarDay", "polarNight"
+              "night",
+              "astronomicalDawn",
+              "nauticalDawn",
+              "dawn",
+              "sunrise",
+              "day",
+              "sunset",
+              "dusk",
+              "nauticalDusk",
+              "astronomicalDusk",
+              "polarDay",
+              "polarNight"
             ]
           },
           "dayLengthSeconds": {
@@ -172,7 +205,12 @@
           "polar": { "$ref": "#/components/schemas/Polar" },
           "now": {
             "type": "object",
-            "required": ["altitudeDeg", "azimuthDeg", "distanceKm", "parallacticAngleDeg"],
+            "required": [
+              "altitudeDeg",
+              "azimuthDeg",
+              "distanceKm",
+              "parallacticAngleDeg"
+            ],
             "properties": {
               "altitudeDeg": { "type": "number" },
               "azimuthDeg": { "type": "number" },
@@ -182,17 +220,35 @@
           },
           "illumination": {
             "type": "object",
-            "required": ["fraction", "phase", "phaseName", "angleDeg", "waxing"],
+            "required": [
+              "fraction",
+              "phase",
+              "phaseName",
+              "angleDeg",
+              "waxing"
+            ],
             "properties": {
-              "fraction": { "type": "number", "description": "Illuminated fraction 0..1." },
-              "phase": { "type": "number", "description": "Cyclical phase 0..1 (0=new, 0.5=full)." },
-              "phaseName": { "type": "string", "description": "Instantaneous phase name at evaluatedAt (§4.7)." },
+              "fraction": {
+                "type": "number",
+                "description": "Illuminated fraction 0..1."
+              },
+              "phase": {
+                "type": "number",
+                "description": "Cyclical phase 0..1 (0=new, 0.5=full)."
+              },
+              "phaseName": {
+                "type": "string",
+                "description": "Instantaneous phase name at evaluatedAt (§4.7)."
+              },
               "cardinalToday": {
                 "type": "string",
                 "nullable": true,
                 "description": "Name of the cardinal phase (New Moon / First Quarter / Full Moon / Last Quarter) whose instant falls within this calendar day, else null. Lets clients show the cardinal graphic on the day the event occurs."
               },
-              "angleDeg": { "type": "number", "description": "Bright-limb position angle in degrees." },
+              "angleDeg": {
+                "type": "number",
+                "description": "Bright-limb position angle in degrees."
+              },
               "waxing": { "type": "boolean" }
             }
           },
@@ -211,8 +267,14 @@
       "AstroResponse": {
         "type": "object",
         "required": [
-          "requestedDate", "position", "dayWindowUtc", "evaluatedAt",
-          "sun", "moon", "generatedAt", "version"
+          "requestedDate",
+          "position",
+          "dayWindowUtc",
+          "evaluatedAt",
+          "sun",
+          "moon",
+          "generatedAt",
+          "version"
         ],
         "properties": {
           "requestedDate": { "type": "string", "format": "date" },

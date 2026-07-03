@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 /**
  * Small typed-error helpers shared by the server modules. Every ApiError carries
@@ -20,6 +20,6 @@ module.exports = {
     return apiError(code, 400, message);
   },
   serverError: function (message) {
-    return apiError('internal', 500, message);
+    return apiError("internal", 500, message);
   },
 };

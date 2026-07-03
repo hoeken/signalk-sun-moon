@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-var ApiRouter = require('./server/ApiRouter');
-var openApi = require('./openApi.json');
+var ApiRouter = require("./server/ApiRouter");
+var openApi = require("./openApi.json");
 
 /**
  * Signal K plugin factory. Combined plugin + webapp (see package.json keywords):
@@ -14,21 +14,21 @@ var openApi = require('./openApi.json');
  */
 module.exports = function (app) {
   var plugin = {
-    id: 'signalk-sun-moon',
-    name: 'Sun & Moon',
-    description: 'Clean sun & moon information (rise/set, phase, observer-oriented moon) for the vessel position and a chosen day.',
+    id: "signalk-sun-moon",
+    name: "Sun & Moon",
+    description: "Clean sun & moon information (rise/set, phase, observer-oriented moon) for the vessel position and a chosen day.",
 
     // No configurable options: position comes from lat/lon query params or the
     // vessel's navigation.position (§4.3), and the graphic style is a client-side
     // choice (see src/config.js).
     schema: {
-      type: 'object',
+      type: "object",
       properties: {},
     },
 
     start: function () {
-      if (typeof app.debug === 'function') {
-        app.debug('signalk-sun-moon started');
+      if (typeof app.debug === "function") {
+        app.debug("signalk-sun-moon started");
       }
     },
 

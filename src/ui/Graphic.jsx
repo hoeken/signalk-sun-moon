@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from "react";
 
 /**
  * Mounts a provider-produced DOM node (SVG or <img>) into a 4:3 graphic slot
@@ -11,12 +11,16 @@ export function Graphic(props) {
 
   useEffect(() => {
     const el = mountRef.current;
-    if (!el) return undefined;
-    while (el.firstChild) el.removeChild(el.firstChild);
-    if (node) el.appendChild(node);
+    if (!el)
+      return undefined;
+    while (el.firstChild)
+      el.removeChild(el.firstChild);
+    if (node)
+      el.appendChild(node);
     return () => {
       if (el) {
-        while (el.firstChild) el.removeChild(el.firstChild);
+        while (el.firstChild)
+          el.removeChild(el.firstChild);
       }
     };
   }, [node]);
@@ -27,8 +31,8 @@ export function Graphic(props) {
     <div className="card__graphic">
       <div className="card__graphic-mount" ref={mountRef} />
       {showOverlay ? (
-        <div className={'card__overlay' + (loading ? ' is-loading' : '')}>
-          <span className="card__overlay-text">{loading ? 'Updating…' : (label || 'No data')}</span>
+        <div className={"card__overlay" + (loading ? " is-loading" : "")}>
+          <span className="card__overlay-text">{loading ? "Updating…" : (label || "No data")}</span>
         </div>
       ) : null}
     </div>

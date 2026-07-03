@@ -1,6 +1,6 @@
-import { ImageProvider } from './ImageProvider.js';
-import { SunGraphicRenderer } from './SunGraphicRenderer.js';
-import { MoonRenderer } from './MoonRenderer.js';
+import { ImageProvider } from "./ImageProvider.js";
+import { SunGraphicRenderer } from "./SunGraphicRenderer.js";
+import { MoonRenderer } from "./MoonRenderer.js";
 
 /**
  * Default provider (§6.5): draws graphics dynamically via the renderers. The
@@ -14,11 +14,12 @@ export class GeneratedImageProvider extends ImageProvider {
   }
 
   getSunImage(state) {
-    return this.sun.render(state || 'day');
+    return this.sun.render(state || "day");
   }
 
   getMoonImage(moonData) {
-    if (!moonData) return null;
+    if (!moonData)
+      return null;
     return this.moon.render(moonData);
   }
 }

@@ -45,7 +45,16 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "eslint --fix . && prettier --write .",
+    "format:check": "eslint . && prettier --check .",
+    "prepare": "husky || true",
     "prepublishOnly": "npm run build"
+  },
+  "lint-staged": {
+    "*.{js,jsx,cjs,mjs}": "eslint --fix",
+    "*.{json,css,html}": "prettier --write"
   },
   "engines": {
     "node": ">=18"
@@ -54,10 +63,18 @@
     "suncalc": "^2.0.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "@vitejs/plugin-react": "^6.0.3",
     "esbuild": "^0.28.1",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "lint-staged": "^16.4.0",
     "png-to-ico": "^3.0.1",
+    "prettier": "^3.8.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sharp": "^0.35.3",

@@ -6,7 +6,7 @@
  * exists in Chromium 69. We use explicit `hour`/`minute` rather than the newer
  * `timeStyle` shortcut (Chrome 76).
  */
-const DASH = '—';
+const DASH = "—";
 
 export class TimeFormatter {
   /**
@@ -17,9 +17,9 @@ export class TimeFormatter {
     const base = timeZone ? { timeZone } : {};
     this._locale = locale;
     this._timeFmt = new Intl.DateTimeFormat(locale || undefined,
-      Object.assign({ hour: '2-digit', minute: '2-digit' }, base));
+      Object.assign({ hour: "2-digit", minute: "2-digit" }, base));
     this._dateFmt = new Intl.DateTimeFormat(locale || undefined,
-      Object.assign({ weekday: 'short', month: 'short', day: 'numeric' }, base));
+      Object.assign({ weekday: "short", month: "short", day: "numeric" }, base));
   }
 
   /** ISO string (or null) → "HH:MM" local, or "—". */
@@ -37,27 +37,30 @@ export class TimeFormatter {
   /** The IANA time-zone name actually in effect, for labeling. */
   timeZoneName() {
     try {
-      return this._timeFmt.resolvedOptions().timeZone || '';
-    } catch (e) {
-      return '';
+      return this._timeFmt.resolvedOptions().timeZone || "";
+    } catch {
+      return "";
     }
   }
 
   // ---- statics ----
 
   static toDate(iso) {
-    if (!iso) return null;
+    if (!iso)
+      return null;
     const d = new Date(iso);
     return isNaN(d.getTime()) ? null : d;
   }
 
   /** Seconds → "13h 30m" (or "—" for null / non-finite). */
   static duration(seconds) {
-    if (typeof seconds !== 'number' || !isFinite(seconds)) return DASH;
+    if (typeof seconds !== "number" || !isFinite(seconds))
+      return DASH;
     const total = Math.max(0, Math.round(seconds / 60));
     const h = Math.floor(total / 60);
     const m = total % 60;
-    if (h === 0) return m + 'm';
-    return h + 'h ' + (m < 10 ? '0' + m : m) + 'm';
+    if (h === 0)
+      return m + "m";
+    return h + "h " + (m < 10 ? "0" + m : m) + "m";
   }
 }
