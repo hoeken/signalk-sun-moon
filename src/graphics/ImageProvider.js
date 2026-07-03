@@ -4,7 +4,7 @@
  * interchangeable without touching card code.
  *
  * Implementations return a DOM node (SVG element or <img>) that the card mounts
- * into its square graphic slot, or null when nothing can be drawn.
+ * into its 4:3 graphic slot, or null when nothing can be drawn.
  */
 export class ImageProvider {
   /**

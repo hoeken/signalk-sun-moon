@@ -22,11 +22,12 @@ const VISUAL = {
   astronomicalDusk: 'dusk',
 };
 
-// Per-visual palette + sun placement. Horizon sits at y=70.
+// Per-visual palette + sun placement, laid out in a 100x75 (4:3) frame. Horizon
+// sits at y=52.5 (70% down the frame); sun `r` is a width-relative radius.
 const SCENES = {
-  day: { skyTop: '#1e6fb8', skyBot: '#9fd0f5', ground: '#0f4c81', sun: { cy: 30, r: 13, core: '#ffd23f', glow: '#ffe89a' }, rays: true, stars: 0 },
-  sunrise: { skyTop: '#3c4c86', skyBot: '#ffbe86', ground: '#274169', sun: { cy: 66, r: 13, core: '#ff9b3d', glow: '#ffd39a' }, rays: false, stars: 0 },
-  sunset: { skyTop: '#43305f', skyBot: '#ff8f61', ground: '#2b2050', sun: { cy: 66, r: 13, core: '#ff6f42', glow: '#ffb489' }, rays: false, stars: 0 },
+  day: { skyTop: '#1e6fb8', skyBot: '#9fd0f5', ground: '#0f4c81', sun: { cy: 22.5, r: 13, core: '#ffd23f', glow: '#ffe89a' }, rays: true, stars: 0 },
+  sunrise: { skyTop: '#3c4c86', skyBot: '#ffbe86', ground: '#274169', sun: { cy: 49.5, r: 13, core: '#ff9b3d', glow: '#ffd39a' }, rays: false, stars: 0 },
+  sunset: { skyTop: '#43305f', skyBot: '#ff8f61', ground: '#2b2050', sun: { cy: 49.5, r: 13, core: '#ff6f42', glow: '#ffb489' }, rays: false, stars: 0 },
   dawn: { skyTop: '#122240', skyBot: '#6f6ea0', ground: '#0c1830', sun: null, rays: false, stars: 5, glow: '#8a6bb0' },
   dusk: { skyTop: '#1a1638', skyBot: '#7c4c76', ground: '#120e2a', sun: null, rays: false, stars: 6, glow: '#7a4a72' },
   night: { skyTop: '#05091a', skyBot: '#0d1836', ground: '#070c1e', sun: null, rays: false, stars: 12 },
@@ -34,8 +35,8 @@ const SCENES = {
 
 // A small fixed constellation so "night" looks intentional, not random.
 const STAR_FIELD = [
-  [14, 16], [30, 10], [46, 22], [62, 12], [78, 18], [88, 30],
-  [22, 34], [54, 38], [72, 44], [12, 50], [40, 52], [84, 56],
+  [14, 12], [30, 7.5], [46, 16.5], [62, 9], [78, 13.5], [88, 22.5],
+  [22, 25.5], [54, 28.5], [72, 33], [12, 37.5], [40, 39], [84, 42],
 ];
 
 let uid = 0;
@@ -58,7 +59,7 @@ export class SunGraphicRenderer {
       '<stop offset="1" stop-color="' + scene.skyBot + '"/>' +
       '</linearGradient>';
 
-    let body = '<rect x="0" y="0" width="100" height="100" fill="url(#' + skyId + ')"/>';
+    let body = '<rect x="0" y="0" width="100" height="75" fill="url(#' + skyId + ')"/>';
 
     // Stars (twilight/night).
     if (scene.stars > 0) {
@@ -78,7 +79,7 @@ export class SunGraphicRenderer {
         '<stop offset="0" stop-color="' + scene.glow + '" stop-opacity="0.9"/>' +
         '<stop offset="1" stop-color="' + scene.glow + '" stop-opacity="0"/>' +
         '</radialGradient>';
-      body += '<rect x="0" y="35" width="100" height="45" fill="url(#' + glowId + ')"/>';
+      body += '<rect x="0" y="26.25" width="100" height="33.75" fill="url(#' + glowId + ')"/>';
     }
 
     // Sun disc (+ soft glow, + rays for day).
@@ -96,10 +97,10 @@ export class SunGraphicRenderer {
     }
 
     // Sea / ground band.
-    body += '<rect x="0" y="70" width="100" height="30" fill="' + scene.ground + '"/>';
-    body += '<rect x="0" y="70" width="100" height="1.2" fill="#ffffff" opacity="0.18"/>';
+    body += '<rect x="0" y="52.5" width="100" height="22.5" fill="' + scene.ground + '"/>';
+    body += '<rect x="0" y="52.5" width="100" height="0.9" fill="#ffffff" opacity="0.18"/>';
 
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" ' +
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 75" role="img" ' +
       'aria-label="Sun graphic: ' + state + '" preserveAspectRatio="xMidYMid meet">' +
       '<defs>' + defs + '</defs>' + body + '</svg>';
   }

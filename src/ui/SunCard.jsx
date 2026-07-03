@@ -20,7 +20,7 @@ const STATE_LABEL = {
 };
 
 /**
- * Sun card (§6.6): square graphic (via the ImageProvider) + sunrise, sunset,
+ * Sun card (§6.6): 4:3 graphic (via the ImageProvider) + sunrise, sunset,
  * solar noon and day length. `state` drives the graphic and the title (the
  * current phase of day).
  */

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * Mounts a provider-produced DOM node (SVG or <img>) into a square graphic slot
+ * Mounts a provider-produced DOM node (SVG or <img>) into a 4:3 graphic slot
  * using a ref, so the framework-free renderers/providers stay React-free (§6.3).
- * The square uses the padding-top hack, not `aspect-ratio` (§6.2).
+ * The slot uses the padding-top hack, not `aspect-ratio` (§6.2).
  */
 export function Graphic(props) {
   const { node, loading, label } = props;

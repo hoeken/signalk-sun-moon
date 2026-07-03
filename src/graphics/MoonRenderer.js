@@ -23,9 +23,12 @@ import { svgFromString, num } from './svgDom.js';
 const LIT = '#e9edf3';
 const SHADOW = '#2b3242';
 const EDGE = '#12151f';
-const R = 44;
+// Laid out in a 100x75 (4:3) frame: the disc is centred and sized to the shorter
+// (height) dimension, so it keeps its original on-card size with room to spare
+// horizontally.
+const R = 33;
 const CX = 50;
-const CY = 50;
+const CY = 37.5;
 
 let uid = 0;
 
@@ -92,10 +95,10 @@ export class MoonRenderer {
     const label = 'Moon: ' + (illum.phaseName || 'phase') +
       ', ' + Math.round(f * 100) + '% illuminated';
 
-    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" ' +
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 75" role="img" ' +
       'aria-label="' + label + '" preserveAspectRatio="xMidYMid meet">' +
       '<defs>' + defs + '</defs>' +
-      '<rect x="0" y="0" width="100" height="100" fill="#0a0f1e"/>' +
+      '<rect x="0" y="0" width="100" height="75" fill="#0a0f1e"/>' +
       disc + overlay +
       '</svg>';
   }

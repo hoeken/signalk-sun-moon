@@ -1,6 +1,6 @@
 /**
  * Parse an SVG markup string into a live SVG DOM node, ready to append into a
- * card's square graphic slot.
+ * card's 4:3 graphic slot.
  *
  * We parse as `image/svg+xml` (strict XML) so camelCase SVG attributes such as
  * `viewBox` and `gradientUnits` keep their case, then `importNode` into the main

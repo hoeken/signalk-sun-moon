@@ -2,7 +2,7 @@
  * Single stylesheet with CSS custom properties for theming (§6.2).
  *
  * Chromium-69 CSS floor (§2.1) is respected here: CSS Grid with grid `gap`
- * (no flex `gap`), the padding-top square hack (no `aspect-ratio`), explicit
+ * (no flex `gap`), the padding-top aspect-ratio hack (no `aspect-ratio`), explicit
  * top/right/bottom/left (no `inset`), and no min()/max()/clamp()/:is()/:where().
  */
 
@@ -57,12 +57,39 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   line-height: 1.4;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* React mounts into #root; stretch it to fill the body so .app's auto
+   margins have vertical free space to center within. */
+#root {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
 }
 
 .app {
+  width: 100%;
   max-width: 960px;
-  margin: 0 auto;
+  /* auto top/bottom margins center on tall screens; on short screens the
+     content overflows normally and stays scrollable (unlike justify-content). */
+  margin: auto;
   padding: 16px;
+}
+
+/* On large screens, widen the app so the card graphics can grow. */
+@media (min-width: 1200px) {
+  .app {
+    max-width: 1120px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .app {
+    max-width: 1260px;
+  }
 }
 
 .app__header {
@@ -223,11 +250,11 @@ body {
   display: block;
 }
 
-/* Square graphic via the padding-top hack (§6.2). */
+/* 4:3 graphic via the padding-top hack (§6.2); 3/4 = 75% of the width. */
 .card__graphic {
   position: relative;
   width: 100%;
-  padding-top: 100%;
+  padding-top: 75%;
   background: #0a0f1e;
   overflow: hidden;
 }
@@ -264,7 +291,8 @@ body {
 }
 
 .card__body {
-  padding: 14px 16px 16px;
+  /* Bottom is trimmed because the last .stat row adds its own 8px padding. */
+  padding: 14px 16px 4px;
 }
 
 .card__title {

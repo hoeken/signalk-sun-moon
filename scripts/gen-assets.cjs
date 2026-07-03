@@ -34,10 +34,11 @@ var ROOT = path.join(__dirname, '..');
 var SRC = path.join(ROOT, 'art');
 var OUT = path.join(ROOT, 'src', 'assets');
 
-// Edge length (px) of the generated square art. The cards render the graphic at
-// roughly ~460 CSS px at the widest layout; 1024 stays crisp well past 2x/retina
-// while WebP keeps the shipped files small.
-var SIZE = 1024;
+// Dimensions (px) of the generated 4:3 art. The cards render the graphic at
+// roughly ~460 CSS px wide at the widest layout; 1024 stays crisp well past
+// 2x/retina while WebP keeps the shipped files small.
+var WIDTH = 1024;
+var HEIGHT = 768;
 
 // WebP quality (0-100). 80 is visually indistinguishable from the source at this
 // display size while shipping an order of magnitude smaller than PNG.
@@ -59,28 +60,28 @@ var MOON = {
   'waning-crescent': 'waning-crescent',
 };
 
-// Resize one square source into SIZE x SIZE. Sources are already square, so
-// `cover` just downscales (and would center-crop a non-square source rather than
-// letterbox it — matching the card's object-fit: cover).
+// Resize one 4:3 source into WIDTH x HEIGHT. Sources are already 4:3, so `cover`
+// just downscales (and would center-crop a differently-proportioned source
+// rather than letterbox it — matching the card's object-fit: cover).
 async function resize(srcRel, outRel) {
   var inPath = path.join(SRC, srcRel);
   var outPath = path.join(OUT, outRel);
 
   var meta = await sharp(inPath).metadata();
-  if (Math.min(meta.width, meta.height) < SIZE) {
+  if (meta.width < WIDTH || meta.height < HEIGHT) {
     console.warn(
       'WARNING: ' + srcRel + ' is ' + meta.width + 'x' + meta.height +
-        '; smaller than the ' + SIZE + 'px target. Output will be upscaled and ' +
-        'may look soft — supply a larger source.',
+        '; smaller than the ' + WIDTH + 'x' + HEIGHT + ' target. Output will be ' +
+        'upscaled and may look soft — supply a larger source.',
     );
   }
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   await sharp(inPath)
-    .resize(SIZE, SIZE, { fit: 'cover', position: 'center' })
+    .resize(WIDTH, HEIGHT, { fit: 'cover', position: 'center' })
     .webp({ quality: QUALITY })
     .toFile(outPath);
-  console.log('  wrote', path.relative(ROOT, outPath), '(' + SIZE + 'x' + SIZE + ')');
+  console.log('  wrote', path.relative(ROOT, outPath), '(' + WIDTH + 'x' + HEIGHT + ')');
 }
 
 async function main() {
