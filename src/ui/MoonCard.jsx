@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Graphic } from './Graphic.jsx';
 import { Stat } from './Stat.jsx';
 
@@ -15,6 +15,11 @@ export function MoonCard(props) {
     () => (moon ? provider.getMoonImage(moon) : null),
     [moon, provider]
   );
+
+  // Warm the cache for the adjacent days' moon frames so paging is smooth.
+  useEffect(() => {
+    if (moon) provider.preloadMoon(moon);
+  }, [moon, provider]);
 
   const illum = moon && moon.illumination;
   const pct = illum && typeof illum.fraction === 'number'

@@ -45,6 +45,9 @@ export class StaticImageProvider extends ImageProvider {
     }
     if (base.charAt(base.length - 1) !== '/') base += '/';
     this.base = base;
+    // src -> Image, so each frame is preloaded at most once and the request
+    // isn't GC'd before it lands in the browser cache (bounded: ≤ 28 frames).
+    this._preloaded = new Map();
   }
 
   getSunImage(state) {
@@ -59,7 +62,33 @@ export class StaticImageProvider extends ImageProvider {
     const pct = typeof illum.fraction === 'number'
       ? ', ' + Math.round(illum.fraction * 100) + '% illuminated' : '';
     const alt = 'Moon: ' + (illum.phaseName || 'phase') + pct;
-    return this.img(this.base + 'moon/moon-' + pad2(frame) + '.webp', alt);
+    return this.img(this.moonSrc(frame), alt);
+  }
+
+  /**
+   * Warm the cache for the previous/next day's moon frame so paging is smooth.
+   * A one-day step advances the phase by ~1/29.5 of the cycle while frames are
+   * spaced 1/28 apart, so the neighbouring day's frame is always the current
+   * one ±1 (mod 28); preloading both covers prev and next. (The current frame
+   * is already displayed, so it isn't preloaded again.)
+   */
+  preloadMoon(moonData) {
+    if (!moonData || !moonData.illumination) return;
+    const frame = moonFrame(moonData.illumination.phase);
+    this.preload(this.moonSrc((frame + 1) % MOON_FRAMES));
+    this.preload(this.moonSrc((frame + MOON_FRAMES - 1) % MOON_FRAMES));
+  }
+
+  moonSrc(frame) {
+    return this.base + 'moon/moon-' + pad2(frame) + '.webp';
+  }
+
+  preload(src) {
+    if (this._preloaded.has(src)) return;
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src;
+    this._preloaded.set(src, img);
   }
 
   img(src, alt) {

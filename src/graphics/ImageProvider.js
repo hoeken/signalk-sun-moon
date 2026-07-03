@@ -24,4 +24,13 @@ export class ImageProvider {
   getMoonImage(moonData) {
     throw new Error('ImageProvider.getMoonImage not implemented');
   }
+
+  /**
+   * Optional hint that the given moon is now displayed, so a provider may warm
+   * the browser cache for images likely needed next (e.g. the adjacent day's
+   * moon frame when paging). Default no-op; safe to call repeatedly.
+   * @param {object} moonData the `moon` object from the API response (§4.5)
+   */
+  // eslint-disable-next-line no-unused-vars
+  preloadMoon(moonData) {}
 }
