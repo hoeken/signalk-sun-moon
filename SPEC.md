@@ -210,14 +210,25 @@ The response reports which source was used via `position.source`
 (`"query" | "vessel" | "config"`).
 
 ### 4.4 Date & time-zone handling
-- `date` is a **calendar date**. The day is anchored at **local noon of that date** at
-  the given position's approximate longitude, then passed to suncalc (which treats
-  `Date` objects as UTC instants). Anchoring at noon avoids day-boundary rollover bugs
-  near midnight for `getMoonTimes`/`getTimes`.
-- **All timestamps in the response are ISO-8601 UTC strings** (`…Z`) or `null`.
-- **Formatting to local time is done in the browser** (§6.6) using
-  `Intl.DateTimeFormat`. The API also echoes `requestedDate` and the UTC day-window used,
-  so the client can label things unambiguously.
+
+**Day anchoring (DECIDED — noon anchoring).** `date` is a **calendar date**. suncalc
+treats every `Date` as a UTC *instant*, but a "day" is *local*, so we anchor the
+calculation at **local noon of that date** at the position's approximate longitude
+(`anchor = date 12:00 at lonOffset`, where `lonOffset ≈ lon/15` hours). Noon sits safely
+mid-day everywhere, so `getTimes`/`getMoonTimes` always return the intended calendar day's
+events — avoiding the off-by-one that naive midnight-UTC anchoring produces at longitude
+extremes (e.g. mid-Pacific).
+
+**Instantaneous values — `evaluatedAt`.** Some values are point-in-time: the sun's `state`
++ graphic, the sun/moon `position`, and the moon's illumination/orientation. They are
+computed at a single instant, reported as top-level `evaluatedAt`:
+- If `requestedDate` is **today** (in the position's local sense) → **actual current time**.
+- Otherwise → the **local-noon anchor** (deterministic; sun `state` will read `day`).
+
+**Time zone.** All response timestamps are **ISO-8601 UTC** (`…Z`) or `null`;
+**formatting to browser-local time happens client-side** (§6.6) via `Intl.DateTimeFormat`.
+The API echoes `requestedDate`, the UTC `dayWindowUtc`, and `evaluatedAt` so the client can
+label everything unambiguously.
 
 ### 4.5 Response body (200)
 ```jsonc
@@ -232,6 +243,7 @@ The response reports which source was used via `position.source`
     "start": "2026-07-03T07:00:00.000Z",
     "end":   "2026-07-04T07:00:00.000Z"
   },
+  "evaluatedAt": "2026-07-03T18:00:00.000Z", // instant used for all point-in-time values (§4.4)
   "sun": {
     "times": {                          // ISO-8601 UTC or null; keys match suncalc getTimes()
       "nadir":         "2026-07-03T...Z",
@@ -250,11 +262,11 @@ The response reports which source was used via `position.source`
       "night":         "2026-07-03T...Z"
     },
     "polar": { "alwaysUp": false, "alwaysDown": false },
-    "now": {                            // sun position at request time
+    "now": {                            // sun position at `evaluatedAt` (§4.4)
       "altitudeDeg": 42.7,             // degrees (suncalc v2)
       "azimuthDeg": 210.3              // degrees, NORTH-based (v2)
     },
-    "state": "day",                     // see §4.6
+    "state": "day",                     // at `evaluatedAt`; drives the sun graphic — see §4.6
     "dayLengthSeconds": 51000
   },
   "moon": {
@@ -263,7 +275,7 @@ The response reports which source was used via `position.source`
       "set":  "2026-07-03T...Z"
     },
     "polar": { "alwaysUp": false, "alwaysDown": false },
-    "now": {                            // getMoonPosition() at request time — degrees (v2)
+    "now": {                            // getMoonPosition() at `evaluatedAt` — degrees (v2)
       "altitudeDeg": 12.1,
       "azimuthDeg": 96.4,
       "distanceKm": 384400,
@@ -288,7 +300,7 @@ The response reports which source was used via `position.source`
 ```
 
 ### 4.6 Sun state resolution (server-side)
-`sun.state` is derived from the request time relative to `getTimes()` events (falling
+`sun.state` is derived from `evaluatedAt` (§4.4) relative to `getTimes()` events (falling
 back to `sun.now.altitudeDeg` when events are `null`, e.g. polar regions). Enumerated
 values, ordered around the day:
 
@@ -300,7 +312,7 @@ plus special values `polarDay` (`alwaysUp`) and `polarNight` (`alwaysDown`).
 The server returns the fine-grained `state`; the **image layer may collapse** several
 states onto one graphic (§6.5). Resolution rules (morning shown; evening is symmetric):
 
-| Condition (request time `t`) | state |
+| Condition (`t` = `evaluatedAt`) | state |
 |---|---|
 | `t` in `[sunrise, sunriseEnd)` | `sunrise` |
 | `t` in `[sunriseEnd, sunsetStart)` | `day` |
@@ -457,7 +469,7 @@ data-fetching and graphics logic portable and testable even though rendering is 
 | `ApiRouter` | Express router; parses/validates query; builds response; error mapping. |
 | `PositionResolver` | Applies the §4.3 resolution order; returns `{lat, lon, source}`. |
 | `AstroService` | Wraps `suncalc`; computes sun/moon times, positions, illumination, `state`, `phaseName`, `zenithAngle`; assembles the §4.5 body. |
-| `DateWindow` | Turns a `YYYY-MM-DD` + longitude into the anchor `Date` and UTC day-window. |
+| `DateWindow` | Turns a `YYYY-MM-DD` + longitude into the local-noon anchor, the UTC day-window, and `evaluatedAt` (now-if-today, else anchor). |
 | `openApi.json` | The OpenAPI document (§5). |
 
 ### 6.4 API base + data flow
@@ -503,11 +515,12 @@ observer's location* ("moon on its back" near the horizon in the tropics):
 > rad↔deg conversion, and no south-based azimuth adjustment that v1 code would have needed.
 
 ### 6.6 Text content
-- **Sun card:** sunrise, sunset, solar noon, day length; current altitude/azimuth
-  optional; state label.
+- **Sun card:** sunrise, sunset, solar noon (rise/set/noon only for now — no live
+  altitude/azimuth or golden-hour bands). Day length may be shown as a small extra. The
+  `state` still drives the *graphic*, but is not listed as text.
 - **Moon card:** phase name, % illuminated (`fraction`), moonrise, moonset; waxing/waning.
-- All times localized by `TimeFormatter`; missing events render as "—" with a tooltip
-  (e.g. "Moon does not set today").
+- All times localized by `TimeFormatter` (**browser-local**); missing events render
+  as "—" with a tooltip (e.g. "Moon does not set today").
 
 ---
 
@@ -626,17 +639,3 @@ server-side, returned as `moon.brightLimb.zenithAngleDeg`, consumed by `MoonRend
    **CSS** in the emitted bundle (§2.1). Modern JS/JSX *syntax* in source is fine (it's
    transpiled, §2.2).
 9. The OpenAPI doc appears in the Admin UI and matches the actual `/api` contract.
-
----
-
-## 10. Open Questions / Decisions
-
-1. ~~**UI stack**~~ — **DECIDED: React + JSX** (§6.1), relying on the reverse-proxy
-   transpilation step + Vite build for Chromium-69 delivery.
-2. **Graphic style at launch** — ship `generated` first (self-contained) and add `static`
-   assets later? (Spec assumes yes.)
-3. **Extra sun detail** — show live altitude/azimuth and golden-hour bands, or keep to
-   rise/set/noon for a cleaner MFD view?
-4. **Time-zone display** — browser-local (assumed) vs a vessel/UTC toggle.
-5. **Day anchoring** — noon-at-position anchoring (§4.4) vs strict UTC day; confirm the
-   behavior near midnight is acceptable for typical use.
