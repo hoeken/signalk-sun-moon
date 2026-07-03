@@ -19,22 +19,21 @@ export function MoonCard(props) {
   const illum = moon && moon.illumination;
   const pct = illum && typeof illum.fraction === 'number'
     ? Math.round(illum.fraction * 100) + '%' : '—';
-  const phase = illum
-    ? illum.phaseName + (illum.waxing ? ' · waxing' : ' · waning')
-    : '—';
+  const title = illum ? illum.phaseName : 'Moon';
+  const phase = illum ? (illum.waxing ? 'Waxing' : 'Waning') : '—';
 
   return (
     <section className="card card--moon">
       <Graphic node={node} loading={loading && !moon} label="Moon" />
       <div className="card__body">
-        <h2 className="card__title">Moon</h2>
+        <h2 className="card__title">{title}</h2>
         <dl className="stats">
-          <Stat label="Phase" value={phase} />
-          <Stat label="Illuminated" value={pct} />
           <Stat label="Moonrise" value={moon ? formatter.time(moon.times.rise) : '—'}
             title={moon && !moon.times.rise ? moonNote(moon, 'rise') : undefined} />
           <Stat label="Moonset" value={moon ? formatter.time(moon.times.set) : '—'}
             title={moon && !moon.times.set ? moonNote(moon, 'set') : undefined} />
+          <Stat label="Phase" value={phase} />
+          <Stat label="Illuminated" value={pct} />
         </dl>
       </div>
     </section>

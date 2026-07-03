@@ -3,9 +3,26 @@ import { TimeFormatter } from '../util/TimeFormatter.js';
 import { Graphic } from './Graphic.jsx';
 import { Stat } from './Stat.jsx';
 
+/** Human-readable labels for the §4.6 sun states, used as the card title. */
+const STATE_LABEL = {
+  polarNight: 'Polar Night',
+  astronomicalDawn: 'Astronomical Dawn',
+  nauticalDawn: 'Nautical Dawn',
+  dawn: 'Dawn',
+  sunrise: 'Sunrise',
+  day: 'Day',
+  polarDay: 'Polar Day',
+  sunset: 'Sunset',
+  dusk: 'Dusk',
+  nauticalDusk: 'Nautical Dusk',
+  astronomicalDusk: 'Astronomical Dusk',
+  night: 'Night',
+};
+
 /**
  * Sun card (§6.6): square graphic (via the ImageProvider) + sunrise, sunset,
- * solar noon and day length. `state` drives the graphic but isn't listed as text.
+ * solar noon and day length. `state` drives the graphic and the title (the
+ * current phase of day).
  */
 export function SunCard(props) {
   const { data, provider, loading, formatter } = props;
@@ -16,11 +33,13 @@ export function SunCard(props) {
     [sun, provider]
   );
 
+  const title = sun ? (STATE_LABEL[sun.state] || 'Sun') : 'Sun';
+
   return (
     <section className="card card--sun">
       <Graphic node={node} loading={loading && !sun} label="Sun" />
       <div className="card__body">
-        <h2 className="card__title">Sun</h2>
+        <h2 className="card__title">{title}</h2>
         <dl className="stats">
           <Stat label="Sunrise" value={sun ? formatter.time(sun.times.sunrise) : '—'}
             title={sun && !sun.times.sunrise ? sunNote(sun, 'rise') : undefined} />
