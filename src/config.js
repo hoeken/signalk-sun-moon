@@ -5,8 +5,8 @@
 export const API_BASE = '/plugins/signalk-sun-moon/api';
 
 // Default graphic style. Mirrors the plugin config `imageStyle` default (§3.5);
-// the app can override it (e.g. via ?imageStyle=static).
-export const IMAGE_STYLE_DEFAULT = 'generated';
+// the app can override it (e.g. via ?imageStyle=generated).
+export const IMAGE_STYLE_DEFAULT = 'static';
 
 // Wide-layout breakpoint (px). Kept here so JS and CSS agree (§6.2).
 export const WIDE_BREAKPOINT = 720;

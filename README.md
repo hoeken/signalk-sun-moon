@@ -67,9 +67,13 @@ Errors are `{ "error": "<code>", "message": "..." }` with codes `bad_date`,
 npm run dev       # Vite dev server (proxies /plugins and /signalk to localhost:3000)
 npm run build     # build the webapp into public/
 npm run preview   # preview the production build
-npm run assets    # regenerate static SVG sun/moon art into src/assets/
+npm run assets    # resize art/ sun/moon source images into static webp in src/assets/
 npm run icons     # regenerate app/favicon/PWA icons from sunmoon-logo.png
 ```
+
+The static sun/moon art (used by `StaticImageProvider`) is resized from the
+high-resolution source images in `art/sun/` and `art/moon/` by `npm run assets`
+into `src/assets/`. Regenerate it after changing the source art.
 
 Icons (Signal K app icon, favicons, and Android/iOS home-screen icons) are derived
 from the master logo `sunmoon-logo.png` by `npm run icons` and committed under

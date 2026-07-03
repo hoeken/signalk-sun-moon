@@ -175,8 +175,8 @@ if (pos && pos.value && typeof pos.value.latitude === 'number') {
       "type": "string",
       "title": "Graphic style",
       "enum": ["generated", "static"],
-      "default": "generated",
-      "description": "Generated SVG, or premade PNG/SVG assets."
+      "default": "static",
+      "description": "Premade WebP art, or dynamically generated SVG."
     }
   }
 }
@@ -487,12 +487,12 @@ re-draw. Show a lightweight loading state and a clear error banner on failure.
 **Image-provider abstraction (required by the brief).** All graphics go through
 `ImageProvider` so we can swap "premade PNG/SVG" ↔ "dynamically generated" without
 touching the cards. The active provider is chosen by plugin config `imageStyle`
-(default `generated`), overridable by the app.
+(default `static`), overridable by the app.
 
 **Sun graphic.** One visual per (possibly collapsed) sun state. Minimum visual set:
 `night`, `dawn`/`dusk` (twilight), `sunrise`/`sunset` (horizon), `day`. The fine-grained
 states in §4.6 map onto these (e.g. astronomical/nautical dawn → the twilight visual).
-`StaticImageProvider` uses files under `src/assets/sun/<state>.svg|png`;
+`StaticImageProvider` uses files under `src/assets/sun/<state>.webp` (resized from `art/`);
 `GeneratedImageProvider` may draw a simple gradient-sky + sun-position SVG.
 
 **Moon SVG (accurate, observer-oriented).** `MoonRenderer` draws an SVG disc whose lit

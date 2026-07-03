@@ -2,10 +2,11 @@ import { ImageProvider } from './ImageProvider.js';
 
 /**
  * Alternative provider (§6.5): returns premade assets keyed by (collapsed) sun
- * state and moon phase, served from `<base>/sun/*.svg` and `<base>/moon/*.svg`.
- * These files are copied verbatim from `src/assets/` into the build output
- * (Vite `publicDir`, §7.1). Static moon art is upright/generic — observer
- * orientation is the GeneratedImageProvider's job.
+ * state and moon phase, served from `<base>/sun/*.webp` and `<base>/moon/*.webp`.
+ * These files are produced by `npm run assets` (resized from the high-res art in
+ * `art/`) and copied verbatim from `src/assets/` into the build output (Vite
+ * `publicDir`, §7.1). Static moon art is upright/generic — observer orientation
+ * is the GeneratedImageProvider's job.
  *
  * Selecting this instead of GeneratedImageProvider changes graphics without
  * touching card code (acceptance criterion 7).
@@ -51,14 +52,14 @@ export class StaticImageProvider extends ImageProvider {
 
   getSunImage(state) {
     const file = SUN_FILE[state] || 'day';
-    return this.img(this.base + 'sun/' + file + '.svg', 'Sun graphic: ' + state);
+    return this.img(this.base + 'sun/' + file + '.webp', 'Sun graphic: ' + state);
   }
 
   getMoonImage(moonData) {
     if (!moonData || !moonData.illumination) return null;
     const name = moonData.illumination.phaseName;
     const file = MOON_FILE[name] || 'full';
-    return this.img(this.base + 'moon/' + file + '.svg', 'Moon: ' + name);
+    return this.img(this.base + 'moon/' + file + '.webp', 'Moon: ' + name);
   }
 
   img(src, alt) {
