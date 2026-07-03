@@ -1,3 +1,7 @@
+# v1.0.1
+
+- Fixed stale description in README
+
 # v1.0.0
 
 Initial release.
