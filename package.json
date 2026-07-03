@@ -37,6 +37,7 @@
     "SPEC.md"
   ],
   "scripts": {
+    "release": "git tag -d v$npm_package_version; git tag v$npm_package_version && git push && git push origin v$npm_package_version",
     "assets": "node scripts/gen-assets.cjs",
     "icons": "node scripts/gen-icons.mjs",
     "dev": "vite",
