@@ -487,6 +487,13 @@ states in §4.6 map onto these (e.g. astronomical/nautical dawn → the twilight
 `StaticImageProvider` uses files under `src/assets/sun/<state>.webp` (resized from `art/`);
 `GeneratedImageProvider` may draw a simple gradient-sky + sun-position SVG.
 
+**Static moon art (28-frame set).** `StaticImageProvider` selects `src/assets/moon/moon-NN.webp`
+by frame index `round(illumination.phase × 28) mod 28` — ~one frame per day of the 29.53-day
+synodic month. 28 divides by 4 so the cardinal phases land on exact frames: `00` New,
+`07` First Quarter, `14` Full, `21` Last Quarter. It keys on the monotonic `phase` (not the
+coarse `phaseName`, nor the waxing/waning-ambiguous `fraction`). All 28 source frames live in
+`art/moon/moon-NN.png` and are resized to WebP by `gen-assets`.
+
 **Moon SVG (accurate, observer-oriented).** `MoonRenderer` draws an SVG disc whose lit
 portion matches the real phase **and** is rotated so it looks correct *from the
 observer's location* ("moon on its back" near the horizon in the tropics):

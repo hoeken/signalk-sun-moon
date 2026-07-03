@@ -9,7 +9,9 @@
  * never copied into the build output (public/) nor shipped in the npm tarball.
  *
  *   art/sun/<state>.png    day, sunrise, sunset, dawn, dusk, night
- *   art/moon/<file>.png    8 phases (new-moon, waxing-crescent, first-quarter, ...)
+ *   art/moon/moon-NN.png   28-frame moon set, NN = 00..27 (see StaticImageProvider)
+ *
+ * All 28 moon frames must be present in art/moon/; a missing source is an error.
  *
  * Outputs land in src/assets/ (Vite's publicDir); `vite build` then copies them
  * verbatim into public/, which is what Signal K serves and what ships (§7.1).
@@ -17,7 +19,7 @@
  * Chrome >= 69 supports it) so the shipped art stays small:
  *
  *   src/assets/sun/<state>.webp
- *   src/assets/moon/<phase>.webp   (slugs match StaticImageProvider's MOON_FILE)
+ *   src/assets/moon/moon-NN.webp   (frame indices StaticImageProvider selects)
  *
  * These are the generic static art; the observer-oriented moon is still drawn
  * live by MoonRenderer. The app/favicon/PWA icons are generated separately from
@@ -48,17 +50,13 @@ var QUALITY = 80;
 // StaticImageProvider's SUN_FILE targets.
 var SUN = ['day', 'sunrise', 'sunset', 'dawn', 'dusk', 'night'];
 
-// Moon source basename -> output slug (StaticImageProvider's MOON_FILE targets).
-var MOON = {
-  'new-moon': 'new',
-  'waxing-crescent': 'waxing-crescent',
-  'first-quarter': 'first-quarter',
-  'waxing-gibbous': 'waxing-gibbous',
-  'full-moon': 'full',
-  'waning-gibbous': 'waning-gibbous',
-  'last-quarter': 'last-quarter',
-  'waning-crescent': 'waning-crescent',
-};
+// Moon: 28-frame set. StaticImageProvider selects frame index round(phase*28)%28,
+// so 00 = New, 07 = First Quarter, 14 = Full, 21 = Last Quarter.
+var MOON_FRAMES = 28;
+
+function pad2(n) {
+  return n < 10 ? '0' + n : String(n);
+}
 
 // Resize one 4:3 source into WIDTH x HEIGHT. Sources are already 4:3, so `cover`
 // just downscales (and would center-crop a differently-proportioned source
@@ -66,6 +64,10 @@ var MOON = {
 async function resize(srcRel, outRel) {
   var inPath = path.join(SRC, srcRel);
   var outPath = path.join(OUT, outRel);
+
+  if (!fs.existsSync(inPath)) {
+    throw new Error('missing source ' + path.relative(ROOT, inPath));
+  }
 
   var meta = await sharp(inPath).metadata();
   if (meta.width < WIDTH || meta.height < HEIGHT) {
@@ -89,10 +91,9 @@ async function main() {
     var name = SUN[i];
     await resize(path.join('sun', name + '.png'), path.join('sun', name + '.webp'));
   }
-  var moonSources = Object.keys(MOON);
-  for (var j = 0; j < moonSources.length; j++) {
-    var src = moonSources[j];
-    await resize(path.join('moon', src + '.png'), path.join('moon', MOON[src] + '.webp'));
+  for (var j = 0; j < MOON_FRAMES; j++) {
+    var frame = 'moon-' + pad2(j);
+    await resize(path.join('moon', frame + '.png'), path.join('moon', frame + '.webp'));
   }
   console.log('done.');
 }
