@@ -1,10 +1,10 @@
 // Generates every derived app/web icon from the single master logo at
-// sunmoon-logo.png (repo root).
+// art/sunmoon-logo.png.
 //
-// The master is intentionally large and lives at the repo root — outside Vite's
-// publicDir (src/assets) and outside package.json "files" — so it is never
-// copied into the build output (public/) nor shipped in the npm tarball. It is
-// used only as the source for the icons produced here.
+// The master is intentionally large and lives in art/ alongside the other source
+// art — outside Vite's publicDir (src/assets) and outside package.json "files" —
+// so it is never copied into the build output (public/) nor shipped in the npm
+// tarball. It is used only as the source for the icons produced here.
 //
 // Outputs land in src/assets/ (Vite's publicDir). `vite build` then copies them
 // verbatim into public/, which is what Signal K serves and what ships. See §7.1.
@@ -19,7 +19,7 @@ import pngToIco from "png-to-ico";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
-const SOURCE = resolve(root, "sunmoon-logo.png");
+const SOURCE = resolve(root, "art", "sunmoon-logo.png");
 const ASSETS = resolve(root, "src/assets");
 const FAVICONS = resolve(ASSETS, "favicons");
 

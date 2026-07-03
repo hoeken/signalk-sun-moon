@@ -580,7 +580,7 @@ signalk-sun-moon/
 | `build` | `vite build` → emits `public/`. |
 | `preview` | `vite preview`. |
 | `assets` | `node scripts/gen-assets.cjs` → static sun/moon SVG art into `src/assets/`. |
-| `icons` | `node scripts/gen-icons.mjs` → app/favicon/PWA icons from `sunmoon-logo.png`. |
+| `icons` | `node scripts/gen-icons.mjs` → app/favicon/PWA icons from `art/sunmoon-logo.png`. |
 
 ### 7.3 Dependencies
 - **Runtime (webapp):** `react`, `react-dom` (React 18).

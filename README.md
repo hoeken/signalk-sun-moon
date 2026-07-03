@@ -68,7 +68,7 @@ npm run dev       # Vite dev server (proxies /plugins and /signalk to localhost:
 npm run build     # build the webapp into public/
 npm run preview   # preview the production build
 npm run assets    # resize art/ sun/moon source images into static webp in src/assets/
-npm run icons     # regenerate app/favicon/PWA icons from sunmoon-logo.png
+npm run icons     # regenerate app/favicon/PWA icons from art/sunmoon-logo.png
 ```
 
 The static sun/moon art (used by `StaticImageProvider`) is resized from the
@@ -76,7 +76,7 @@ high-resolution source images in `art/sun/` and `art/moon/` by `npm run assets`
 into `src/assets/`. Regenerate it after changing the source art.
 
 Icons (Signal K app icon, favicons, and Android/iOS home-screen icons) are derived
-from the master logo `sunmoon-logo.png` by `npm run icons` and committed under
+from the master logo `art/sunmoon-logo.png` by `npm run icons` and committed under
 `src/assets/`. Regenerate them after changing the logo. The webapp is installable to
 the home screen on iOS and Android via `src/assets/site.webmanifest` and the meta
 tags in [src/index.html](src/index.html).
