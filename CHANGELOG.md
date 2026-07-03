@@ -1,3 +1,7 @@
+# v1.0.2
+
+- fix(TimeFormatter): honor runtime UTC offset so times display correctly on Navico MFDs
+
 # v1.0.1
 
 - Fixed stale description in README
