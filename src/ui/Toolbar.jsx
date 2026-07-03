@@ -28,10 +28,10 @@ export function Toolbar(props) {
         >
           Today
         </button>
-        {loading ? <span className="toolbar__spinner" aria-label="Loading">●</span> : null}
       </div>
 
       <div className="toolbar__meta">
+        {loading ? <span className="toolbar__spinner" aria-label="Loading">●</span> : null}
         <span className="toolbar__pos">{formatPosition(position)}</span>
       </div>
     </div>

@@ -134,6 +134,7 @@ body {
 .toolbar__spinner {
   color: var(--accent);
   font-size: 12px;
+  margin-right: 8px;
   animation: pulse 1s ease-in-out infinite;
 }
 
@@ -148,6 +149,7 @@ body {
   border: 1px solid var(--border);
   background: var(--card-2);
   color: var(--text);
+  font-family: inherit;
   font-size: 15px;
   font-weight: 600;
   padding: 9px 14px;
