@@ -1,0 +1,229 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Sun & Moon API",
+    "version": "1.0.0",
+    "description": "Sun & moon data (rise/set times, sun state, moon phase and observer-oriented bright-limb orientation) for a calendar day and a position. Paths are relative to /plugins/signalk-sun-moon, so the documented path /api is served at /plugins/signalk-sun-moon/api.",
+    "license": { "name": "Apache-2.0" }
+  },
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "getSunMoon",
+        "summary": "Sun & moon data for a day and position",
+        "description": "Computes sun and moon information for the given calendar date and position. Position resolves in order: lat/lon query params, then the vessel navigation.position, then the plugin config default.",
+        "parameters": [
+          {
+            "name": "date",
+            "in": "query",
+            "required": false,
+            "description": "Calendar day to compute for (YYYY-MM-DD). Defaults to today at the resolved longitude.",
+            "schema": { "type": "string", "format": "date", "example": "2026-07-03" }
+          },
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "description": "Observer latitude in decimal degrees. Must be supplied together with lon.",
+            "schema": { "type": "number", "minimum": -90, "maximum": 90, "example": 37.81 }
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "description": "Observer longitude in decimal degrees. Must be supplied together with lat.",
+            "schema": { "type": "number", "minimum": -180, "maximum": 180, "example": -122.42 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sun & moon data.",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AstroResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "responses": {
+      "Error": {
+        "description": "Error response.",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/Error" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": ["error", "message"],
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "Machine-readable error code.",
+            "enum": ["bad_date", "bad_position", "no_position", "internal"]
+          },
+          "message": { "type": "string", "description": "Human-readable explanation." }
+        }
+      },
+      "IsoOrNull": {
+        "type": "string",
+        "format": "date-time",
+        "nullable": true,
+        "description": "ISO-8601 UTC instant, or null when the event does not occur."
+      },
+      "Polar": {
+        "type": "object",
+        "required": ["alwaysUp", "alwaysDown"],
+        "properties": {
+          "alwaysUp": { "type": "boolean" },
+          "alwaysDown": { "type": "boolean" }
+        }
+      },
+      "Position": {
+        "type": "object",
+        "required": ["latitude", "longitude", "source"],
+        "properties": {
+          "latitude": { "type": "number" },
+          "longitude": { "type": "number" },
+          "source": {
+            "type": "string",
+            "enum": ["query", "vessel", "config"],
+            "description": "Which resolution step supplied the position."
+          }
+        }
+      },
+      "DayWindowUtc": {
+        "type": "object",
+        "required": ["start", "end"],
+        "properties": {
+          "start": { "type": "string", "format": "date-time" },
+          "end": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SunTimes": {
+        "type": "object",
+        "description": "suncalc getTimes() events as ISO-8601 UTC or null.",
+        "properties": {
+          "nadir": { "$ref": "#/components/schemas/IsoOrNull" },
+          "nightEnd": { "$ref": "#/components/schemas/IsoOrNull" },
+          "nauticalDawn": { "$ref": "#/components/schemas/IsoOrNull" },
+          "dawn": { "$ref": "#/components/schemas/IsoOrNull" },
+          "sunrise": { "$ref": "#/components/schemas/IsoOrNull" },
+          "sunriseEnd": { "$ref": "#/components/schemas/IsoOrNull" },
+          "goldenHourEnd": { "$ref": "#/components/schemas/IsoOrNull" },
+          "solarNoon": { "$ref": "#/components/schemas/IsoOrNull" },
+          "goldenHour": { "$ref": "#/components/schemas/IsoOrNull" },
+          "sunsetStart": { "$ref": "#/components/schemas/IsoOrNull" },
+          "sunset": { "$ref": "#/components/schemas/IsoOrNull" },
+          "dusk": { "$ref": "#/components/schemas/IsoOrNull" },
+          "nauticalDusk": { "$ref": "#/components/schemas/IsoOrNull" },
+          "night": { "$ref": "#/components/schemas/IsoOrNull" }
+        }
+      },
+      "Sun": {
+        "type": "object",
+        "required": ["times", "polar", "now", "state", "dayLengthSeconds"],
+        "properties": {
+          "times": { "$ref": "#/components/schemas/SunTimes" },
+          "polar": { "$ref": "#/components/schemas/Polar" },
+          "now": {
+            "type": "object",
+            "required": ["altitudeDeg", "azimuthDeg"],
+            "properties": {
+              "altitudeDeg": { "type": "number", "description": "Apparent altitude in degrees." },
+              "azimuthDeg": { "type": "number", "description": "North-based azimuth in degrees (0=N, 90=E)." }
+            }
+          },
+          "state": {
+            "type": "string",
+            "description": "Sun state at evaluatedAt (§4.6).",
+            "enum": [
+              "night", "astronomicalDawn", "nauticalDawn", "dawn", "sunrise", "day",
+              "sunset", "dusk", "nauticalDusk", "astronomicalDusk", "polarDay", "polarNight"
+            ]
+          },
+          "dayLengthSeconds": {
+            "type": "integer",
+            "nullable": true,
+            "description": "Seconds between sunrise and sunset (86400 for polar day, 0 for polar night, null if undefined)."
+          }
+        }
+      },
+      "Moon": {
+        "type": "object",
+        "required": ["times", "polar", "now", "illumination", "brightLimb"],
+        "properties": {
+          "times": {
+            "type": "object",
+            "properties": {
+              "rise": { "$ref": "#/components/schemas/IsoOrNull" },
+              "set": { "$ref": "#/components/schemas/IsoOrNull" }
+            }
+          },
+          "polar": { "$ref": "#/components/schemas/Polar" },
+          "now": {
+            "type": "object",
+            "required": ["altitudeDeg", "azimuthDeg", "distanceKm", "parallacticAngleDeg"],
+            "properties": {
+              "altitudeDeg": { "type": "number" },
+              "azimuthDeg": { "type": "number" },
+              "distanceKm": { "type": "number" },
+              "parallacticAngleDeg": { "type": "number" }
+            }
+          },
+          "illumination": {
+            "type": "object",
+            "required": ["fraction", "phase", "phaseName", "angleDeg", "waxing"],
+            "properties": {
+              "fraction": { "type": "number", "description": "Illuminated fraction 0..1." },
+              "phase": { "type": "number", "description": "Cyclical phase 0..1 (0=new, 0.5=full)." },
+              "phaseName": { "type": "string" },
+              "angleDeg": { "type": "number", "description": "Bright-limb position angle in degrees." },
+              "waxing": { "type": "boolean" }
+            }
+          },
+          "brightLimb": {
+            "type": "object",
+            "required": ["zenithAngleDeg"],
+            "properties": {
+              "zenithAngleDeg": {
+                "type": "number",
+                "description": "Zenith angle of the bright limb (anticlockwise) = illumination.angle - moon.parallacticAngle."
+              }
+            }
+          }
+        }
+      },
+      "AstroResponse": {
+        "type": "object",
+        "required": [
+          "requestedDate", "position", "dayWindowUtc", "evaluatedAt",
+          "sun", "moon", "generatedAt", "version"
+        ],
+        "properties": {
+          "requestedDate": { "type": "string", "format": "date" },
+          "position": { "$ref": "#/components/schemas/Position" },
+          "dayWindowUtc": { "$ref": "#/components/schemas/DayWindowUtc" },
+          "evaluatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Instant used for all point-in-time values (§4.4)."
+          },
+          "sun": { "$ref": "#/components/schemas/Sun" },
+          "moon": { "$ref": "#/components/schemas/Moon" },
+          "generatedAt": { "type": "string", "format": "date-time" },
+          "version": { "type": "integer", "example": 1 }
+        }
+      }
+    }
+  }
+}
