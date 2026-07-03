@@ -1,6 +1,6 @@
 # signalk-sun-moon
 
-A [Signal K](https://signalk.org/) server plugin **+** standalone webapp that shows clean,
+A [Signal K](https://signalk.org/) server plugin / standalone webapp that shows clean,
 clear **sun** and **moon** information for the vessel's current position and a chosen day:
 rise/set times, a sun-state graphic, and an **observer-oriented moon** SVG (correct
 bright-limb orientation — the "moon on its back" you actually see near the horizon).
@@ -11,6 +11,11 @@ bright-limb orientation — the "moon on its back" you actually see near the hor
 - Builds for **Chromium 69** (Navico / older MFD browsers).
 
 See [SPEC.md](SPEC.md) for the full design.
+
+> **Note:** This plugin does **not** publish any Signal K paths — its data is served only
+> through the HTTP endpoint above. If you want sun/moon data in your Signal K data tree,
+> install [signalk-derived-data](https://github.com/SignalK/signalk-derived-data).
+
 
 ## Install
 

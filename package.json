@@ -8,6 +8,7 @@
   "keywords": [
     "signalk-node-server-plugin",
     "signalk-webapp",
+    "signalk-category-utility",
     "sun",
     "moon",
     "astronomy",
@@ -15,8 +16,13 @@
   ],
   "signalk": {
     "displayName": "Sun & Moon",
-    "appIcon": "icons/icon-512x512.png"
+    "appIcon": "icons/icon-512x512.png",
+    "recommends": [
+      "signalk-derived-data",
+      "signalk-navico-embedder"
+    ]
   },
+  "signalk-plugin-enabled-by-default": true,
   "browserslist": "Chrome >= 69",
   "files": [
     "index.js",
