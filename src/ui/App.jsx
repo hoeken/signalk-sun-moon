@@ -95,8 +95,7 @@ export function App() {
       
       <footer className="app__footer">
         <span>
-          Times shown in your local time zone. Astronomy by suncalc.
-          {data && data.requestedDate ? ' Day: ' + data.requestedDate + '.' : ''}
+          Times shown in your local time zone. Astronomy by <a href="https://www.npmjs.com/package/suncalc">suncalc</a>.
         </span>
       </footer>
     </div>

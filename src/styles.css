@@ -87,9 +87,6 @@ body {
   border-radius: var(--radius);
   padding: 12px;
   margin-top: 16px;
-  position: sticky;
-  bottom: 8px;
-  z-index: 5;
   box-shadow: var(--shadow);
 }
 
@@ -324,4 +321,13 @@ body {
   color: var(--text-dim);
   font-size: 12px;
   text-align: center;
+}
+
+.app__footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.app__footer a:hover {
+  text-decoration: underline;
 }
