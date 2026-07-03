@@ -2,8 +2,7 @@
 
 A [Signal K](https://signalk.org/) server plugin / standalone webapp that shows clean,
 clear **sun** and **moon** information for the vessel's current position and a chosen day:
-rise/set times, a sun-state graphic, and an **observer-oriented moon** SVG (correct
-bright-limb orientation — the "moon on its back" you actually see near the horizon).
+rise/set times, a sun-state graphic, and a moon-state graphic.
 
 - Two cards — **Sun** and **Moon** — each with a large square graphic plus text.
 - Navigate days with **‹ Prev · date-picker · Next ›** (and a **Today** shortcut).
