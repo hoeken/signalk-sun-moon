@@ -86,9 +86,9 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 12px;
-  margin-bottom: 16px;
+  margin-top: 16px;
   position: sticky;
-  top: 8px;
+  bottom: 8px;
   z-index: 5;
   box-shadow: var(--shadow);
 }

@@ -69,21 +69,6 @@ export function App() {
 
   return (
     <div className="app">
-      <header className="app__header">
-        <h1 className="app__title">Sun &amp; Moon</h1>
-      </header>
-
-      <Toolbar
-        date={date}
-        isToday={isToday}
-        onPrev={onPrev}
-        onNext={onNext}
-        onToday={onToday}
-        onSet={onSet}
-        loading={loading}
-        position={data && data.position}
-        timeZone={formatter.timeZoneName()}
-      />
 
       {error ? (
         <div className="banner banner--error" role="alert">
@@ -96,6 +81,18 @@ export function App() {
         <MoonCard data={data} provider={provider} loading={loading} formatter={formatter} />
       </main>
 
+      <Toolbar
+        date={date}
+        isToday={isToday}
+        onPrev={onPrev}
+        onNext={onNext}
+        onToday={onToday}
+        onSet={onSet}
+        loading={loading}
+        position={data && data.position}
+        timeZone={formatter.timeZoneName()}
+      />
+      
       <footer className="app__footer">
         <span>
           Times shown in your local time zone. Astronomy by suncalc.
