@@ -1,19 +1,19 @@
 'use strict';
 
 /*
- * Generates the premade assets used by StaticImageProvider and the plugin app
- * icon. Run with `node scripts/gen-assets.cjs` (also wired to `npm run assets`).
+ * Generates the premade sun/moon art used by StaticImageProvider. Run with
+ * `node scripts/gen-assets.cjs` (also wired to `npm run assets`).
  *
  *   src/assets/sun/<state>.svg    day, sunrise, sunset, dawn, dusk, night
  *   src/assets/moon/<phase>.svg   8 phases (upright, side-lit convention)
- *   src/assets/icons/icon-72x72.png
  *
  * These are static art; the observer-oriented moon is drawn live by MoonRenderer.
+ * The app/favicon/PWA icons are generated separately from the master logo by
+ * `npm run icons` (scripts/gen-icons.mjs).
  */
 
 var fs = require('fs');
 var path = require('path');
-var zlib = require('zlib');
 
 var ROOT = path.join(__dirname, '..', 'src', 'assets');
 
@@ -108,77 +108,6 @@ function moonSvg(slug, frac, side) {
     '</svg>\n';
 }
 
-// ---------------------------------------------------------------- PNG icon
-
-var CRC_TABLE = (function () {
-  var t = [];
-  for (var n = 0; n < 256; n++) {
-    var c = n;
-    for (var k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-
-function crc32(buf) {
-  var c = 0xffffffff;
-  for (var i = 0; i < buf.length; i++) c = CRC_TABLE[(c ^ buf[i]) & 0xff] ^ (c >>> 8);
-  return (c ^ 0xffffffff) >>> 0;
-}
-
-function pngChunk(type, data) {
-  var len = Buffer.alloc(4);
-  len.writeUInt32BE(data.length, 0);
-  var typeBuf = Buffer.from(type, 'ascii');
-  var crcBuf = Buffer.alloc(4);
-  crcBuf.writeUInt32BE(crc32(Buffer.concat([typeBuf, data])), 0);
-  return Buffer.concat([len, typeBuf, data, crcBuf]);
-}
-
-function makeIcon(size) {
-  var raw = Buffer.alloc(size * (size * 4 + 1));
-  var sun = { x: size * 0.36, y: size * 0.36, r: size * 0.22, col: [255, 210, 63] };
-  var moonR = size * 0.21;
-  var moon = { x: size * 0.66, y: size * 0.66, r: moonR, carveX: size * 0.66 + moonR * 0.55, carveY: size * 0.66 - moonR * 0.35, carveR: moonR * 1.02, col: [207, 215, 230] };
-  var bg = [10, 15, 30];
-
-  for (var y = 0; y < size; y++) {
-    var rowStart = y * (size * 4 + 1);
-    raw[rowStart] = 0; // filter: none
-    for (var x = 0; x < size; x++) {
-      var px = [bg[0], bg[1], bg[2], 255];
-      // moon crescent (disc minus carve)
-      var dm = (x - moon.x) * (x - moon.x) + (y - moon.y) * (y - moon.y);
-      var dc = (x - moon.carveX) * (x - moon.carveX) + (y - moon.carveY) * (y - moon.carveY);
-      if (dm <= moon.r * moon.r && dc > moon.carveR * moon.carveR) {
-        px = [moon.col[0], moon.col[1], moon.col[2], 255];
-      }
-      // sun on top
-      var ds = (x - sun.x) * (x - sun.x) + (y - sun.y) * (y - sun.y);
-      if (ds <= sun.r * sun.r) {
-        px = [sun.col[0], sun.col[1], sun.col[2], 255];
-      }
-      var o = rowStart + 1 + x * 4;
-      raw[o] = px[0]; raw[o + 1] = px[1]; raw[o + 2] = px[2]; raw[o + 3] = px[3];
-    }
-  }
-
-  var ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(size, 0);
-  ihdr.writeUInt32BE(size, 4);
-  ihdr[8] = 8;  // bit depth
-  ihdr[9] = 6;  // color type RGBA
-  ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
-
-  var sig = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-  return Buffer.concat([
-    sig,
-    pngChunk('IHDR', ihdr),
-    pngChunk('IDAT', zlib.deflateSync(raw, { level: 9 })),
-    pngChunk('IEND', Buffer.alloc(0)),
-  ]);
-}
-
 // ---------------------------------------------------------------- run
 
 Object.keys(SUN_SCENES).forEach(function (name) {
@@ -188,8 +117,5 @@ Object.keys(SUN_SCENES).forEach(function (name) {
 MOON_PHASES.forEach(function (p) {
   write(path.join('moon', p[0] + '.svg'), moonSvg(p[0], p[1], p[2]));
 });
-
-write(path.join('icons', 'icon-72x72.png'), makeIcon(72));
-write(path.join('icons', 'icon-512x512.png'), makeIcon(512));
 
 console.log('done.');

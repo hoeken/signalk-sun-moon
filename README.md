@@ -67,8 +67,15 @@ Errors are `{ "error": "<code>", "message": "..." }` with codes `bad_date`,
 npm run dev       # Vite dev server (proxies /plugins and /signalk to localhost:3000)
 npm run build     # build the webapp into public/
 npm run preview   # preview the production build
-npm run assets    # regenerate static SVG assets + app icon into src/assets/
+npm run assets    # regenerate static SVG sun/moon art into src/assets/
+npm run icons     # regenerate app/favicon/PWA icons from sunmoon-logo.png
 ```
+
+Icons (Signal K app icon, favicons, and Android/iOS home-screen icons) are derived
+from the master logo `sunmoon-logo.png` by `npm run icons` and committed under
+`src/assets/`. Regenerate them after changing the logo. The webapp is installable to
+the home screen on iOS and Android via `src/assets/site.webmanifest` and the meta
+tags in [src/index.html](src/index.html).
 
 During `vite dev`, point a running Signal K server at `http://localhost:3000` (or edit the
 proxy target in [vite.config.js](vite.config.js)).

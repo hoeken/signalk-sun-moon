@@ -1,7 +1,7 @@
 {
   "name": "signalk-sun-moon",
   "version": "1.0.0",
-  "description": "Signal K plugin + webapp showing clean sun & moon information (rise/set, phase, observer-oriented moon) for the vessel's position and a chosen day.",
+  "description": "Webapp with sun & moon information (rise/set, phase, etc) based on vessel's position.",
   "author": "Zach Hoeken <hoeken@gmail.com>",
   "license": "Apache-2.0",
   "main": "index.js",
@@ -15,7 +15,7 @@
   ],
   "signalk": {
     "displayName": "Sun & Moon",
-    "appIcon": "./public/icons/icon-72x72.png"
+    "appIcon": "icons/icon-512x512.png"
   },
   "browserslist": "Chrome >= 69",
   "files": [
@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "assets": "node scripts/gen-assets.cjs",
+    "icons": "node scripts/gen-icons.mjs",
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
@@ -40,8 +41,10 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
+    "png-to-ico": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "sharp": "^0.35.3",
     "vite": "^5.4.0"
   },
   "repository": {

@@ -544,7 +544,8 @@ signalk-sun-moon/
 │  ├─ graphics/ (ImageProvider.js, StaticImageProvider.js,
 │  │            GeneratedImageProvider.js, SunGraphicRenderer.js, MoonRenderer.js)
 │  ├─ util/ (DateController.js, TimeFormatter.js)
-│  └─ assets/ (sun/, moon/, icons/)
+│  ├─ assets/ (sun/, moon/, icons/, favicons/, site.webmanifest)
+│  └─ index.html            # favicon + PWA / add-to-home-screen markup
 ├─ public/                  # BUILD OUTPUT (git-ignored) — auto-served by Signal K
 ├─ vite.config.js
 ├─ package.json
@@ -578,11 +579,13 @@ signalk-sun-moon/
 | `dev` | `vite` (with proxy → live SK server). |
 | `build` | `vite build` → emits `public/`. |
 | `preview` | `vite preview`. |
+| `assets` | `node scripts/gen-assets.cjs` → static sun/moon SVG art into `src/assets/`. |
+| `icons` | `node scripts/gen-icons.mjs` → app/favicon/PWA icons from `sunmoon-logo.png`. |
 
 ### 7.3 Dependencies
 - **Runtime (webapp):** `react`, `react-dom` (React 18).
 - **Runtime (server):** `suncalc` (**^2.0**). (Express is provided by the SK server.)
-- **Dev:** `vite`, `@vitejs/plugin-react`.
+- **Dev:** `vite`, `@vitejs/plugin-react`, `sharp` + `png-to-ico` (icon generation only).
 - Node engine: match the Signal K server's supported Node range.
 
 > **suncalc v2 install caveat.** v2 is ESM-first (ships a bundled build for legacy). The
